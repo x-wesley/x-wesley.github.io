@@ -21,7 +21,7 @@
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="/image/favicon.png">
   
   <link rel="stylesheet" type="text/css" href="/./main.0cf68a.css">
   <style type="text/css">
@@ -45,7 +45,7 @@
 <div class="intrude-less">
 	<header id="header" class="inner">
 		<a href="/" class="profilepic">
-			<img src="" class="js-avatar">
+			<img src="/image/avatar.png" class="js-avatar">
 		</a>
 		<hgroup>
 		  <h1 class="header-author"><a href="/"></a></h1>
@@ -56,8 +56,6 @@
 			<ul>
 			
 				<li><a href="/">主页</a></li>
-	        
-				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -79,13 +77,7 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-		        
-					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-		        
-					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-		        
-					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+					<a class="github" target="_blank" href="https://github.com/x-wesley" title="github"><i class="icon-github"></i></a>
 		        
 			</div>
 		</nav>
@@ -103,7 +95,7 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-				<img src="" class="js-avatar">
+				<img src="/image/avatar.png" class="js-avatar">
 			</div>
 			<hgroup>
 			  <h1 class="header-author js-header-author"></h1>
@@ -113,20 +105,12 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-			        
-						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-			        
-						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-			        
-						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+						<a class="github" target="_blank" href="https://github.com/x-wesley" title="github"><i class="icon-github"></i></a>
 			        
 				</div>
 			</nav>
@@ -135,9 +119,7 @@
 				<ul style="width: 50%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
-		        
-					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+					<li style="width: 100%"><a href="/">主页</a></li>
 		        
 				</ul>
 			</nav>
@@ -177,8 +159,6 @@
         <blockquote>
 <p>牛年牛逼轰轰~~<br>对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档<a target="_blank" rel="noopener" href="https://golang.org/ref/mem">The Go Memory Model</a>。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。</p>
 </blockquote>
-        
-          <a class="article-more-a" href="/24_The_Go_Memory_Model/#more">more >></a>
         
       
 
@@ -245,8 +225,6 @@
 <p>2021年这么快就来了。。。。。。。。。<br>Golang运行时的内存分配算法主要源自Google为C语言开发的TCMalloc算法，全称Thread-Caching Malloc。核心思想就是把内存分为多级管理，从而降低锁的粒度。它将可用的堆内存采用二级分配的方式进行管理：每个线程都会自行维护一个独立的内存池，进行内存分配时优先从该内存池中分配，当内存池不足时才会向全局内存池申请，以避免不同线程对全局内存池的频繁竞争。<br>Golang中也实现了内存分配器，原理与tcmalloc类似，简单的说就是维护一块大的全局内存，每个线程(Golang中为P)维护一块小的私有内存，私有内存不足再从全局申请。</p>
 </blockquote>
         
-          <a class="article-more-a" href="/23_GOLANG_Memory_Allocation/#more">more >></a>
-        
       
 
       
@@ -311,8 +289,6 @@
         <blockquote>
 <p>艹蛋的2020即将结束，期待2021年的到来。<br>选择索引是优化器的工作。查询优化器是专门负责优化查询语句的优化器模块，通过计算分析收集的各种系统统计信息，为查询给出最优的执行计划——最优的数据检索方式。</p>
 </blockquote>
-        
-          <a class="article-more-a" href="/22_Mysql_Optimizer/#more">more >></a>
         
       
 
@@ -379,8 +355,6 @@
 <p>光棍节快乐呀~ 哈哈哈哈哈<br>EXPLAIN语句帮助我们查看某个查询语句的具体执行计划。</p>
 </blockquote>
         
-          <a class="article-more-a" href="/21_Mysql_EXPLAIN/#more">more >></a>
-        
       
 
       
@@ -445,8 +419,6 @@
         <blockquote>
 <p>Extra列是用来说明一些额外信息的，这些额外的信息可以帮助我们更准确的理解Mysql到底如何执行给定的查询语句。</p>
 </blockquote>
-        
-          <a class="article-more-a" href="/20_Mysql_Extra/#more">more >></a>
         
       
 
@@ -513,8 +485,6 @@
 <p>周期性定时器–Ticker，定时器周期的进行计时，除非注定停止，否则永远运行</p>
 </blockquote>
         
-          <a class="article-more-a" href="/19_ticker/#more">more >></a>
-        
       
 
       
@@ -579,8 +549,6 @@
         <blockquote>
 <p>golang提供了两种定时器。<br>一次性定时器–Timer，定时器只计时一次，计时结束遍停止运行<br>周期性定时器–Ticker，定时器周期的进行计时，除非注定停止，否则永远运行</p>
 </blockquote>
-        
-          <a class="article-more-a" href="/18_timer/#more">more >></a>
         
       
 
@@ -647,8 +615,6 @@
 <p>golang官方提供了一些非常优秀的类库，并不在官方版本中。这些类库在golang.org/x/……下面，可以在github.com中找到。<br>虽然golang提供了运行时内部使用的信号量然而并没有封装暴露成一个对外的信号量并发原语，原则上我们没有办法使用。像信号量这么常用功能也被放到了golang.org/x/sync这个扩展包里。<br>这个扩展包提供的semaphore也被命名为Weighted，你受得了吗。</p>
 </blockquote>
         
-          <a class="article-more-a" href="/17_semaphore/#more">more >></a>
-        
       
 
       
@@ -714,8 +680,6 @@
 <p>HTTP 运行在了安全的 SSL/TLS 协议上。把 HTTP 下层的传输协议由 TCP/IP 换成了 SSL/TLS。<br>HTTPS的引入为了解决HTTP协议传输机密性、完整性、身份认证、不可否认等相关的安全问题。</p>
 </blockquote>
         
-          <a class="article-more-a" href="/https/#more">more >></a>
-        
       
 
       
@@ -780,8 +744,6 @@
         <blockquote>
 <p>当浏览者访问一个网页时，浏览者的浏览器会向网页所在服务器发出请求。<br>当浏览器接收并显示网页前，此网页所在的服务器会返回一个包含HTTP状态码的信息头（server header）用以响应浏览器的请求。<br>HTTP状态码的英文为HTTP Status Code。</p>
 </blockquote>
-        
-          <a class="article-more-a" href="/http-code/#more">more >></a>
         
       
 
@@ -969,27 +931,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
         <ul class="search-ul">
           
             <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接1</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接2</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接3</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接4</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接5</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接6</a>
+              <a href="https://golang.org/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>golang</a>
             </li>
           
         </ul>
@@ -1000,7 +942,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">囊鼠一枚  欢迎交流</div>
   	  	
     	</section>
     
