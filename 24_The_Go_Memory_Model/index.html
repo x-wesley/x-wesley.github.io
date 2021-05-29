@@ -5,19 +5,20 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://gopher.vip">
+  <link rel="dns-prefetch" href="https://gopher.vip">
   <title>Golang内存模型 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="牛年牛逼轰轰~~对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档The Go Memory Model。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Golang内存模型">
-<meta property="og:url" content="http://gopher.vip/24_The_Go_Memory_Model/index.html">
+<meta property="og:url" content="https://gopher.vip/24_The_Go_Memory_Model/index.html">
 <meta property="og:site_name" content="我勒个擦">
 <meta property="og:description" content="牛年牛逼轰轰~~对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档The Go Memory Model。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-12T15:50:25.000Z">
 <meta property="article:modified_time" content="2021-05-25T15:32:10.084Z">
 <meta property="article:author" content="我ca我ca我cacaca">
+<meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
@@ -50,8 +51,10 @@
 			<img src="/image/avatar.png" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/"></a></h1>
+		  <h1 class="header-author"><a href="/">我ca我ca我cacaca</a></h1>
 		</hgroup>
+		
+		<p class="header-subtitle">学习笔记</p>
 		
 
 		<nav class="header-menu">
@@ -100,8 +103,10 @@
 				<img src="/image/avatar.png" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author"></h1>
+			  <h1 class="header-author js-header-author">我ca我ca我cacaca</h1>
 			</hgroup>
+			
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>学习笔记<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -257,6 +262,57 @@
 
       
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/24_The_Go_Memory_Model/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
