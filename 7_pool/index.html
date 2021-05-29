@@ -6,18 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>sync.Pool | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/2/index.html">
+  <meta name="description" content="我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sync.Pool">
+<meta property="og:url" content="https://gopher.vip/7_pool/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gopher.vip/image/pool/pool-get.png">
+<meta property="article:published_time" content="2019-09-03T06:56:06.000Z">
+<meta property="article:modified_time" content="2021-05-25T15:32:10.085Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gopher.vip/image/pool/pool-get.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -139,307 +143,201 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-7_pool" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/15_http-code/" class="archive-article-date">
-  	<time datetime="2020-05-01T02:39:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/15_http-code/">HTTP状态码整理</a>
+    <h1 class="article-title" itemprop="name">
+      sync.Pool
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/14_slice-grow/" class="archive-article-date">
-  	<time datetime="2020-04-05T05:22:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/14_slice-grow/">slice的追加和扩容</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/13_channel/" class="archive-article-date">
-  	<time datetime="2020-03-28T09:01:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/13_channel/">理解channel</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/12_sync.WaitGroup/" class="archive-article-date">
-  	<time datetime="2020-02-22T07:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/11_make&new/">make &amp; new</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
+        
+        <a href="/7_pool/" class="archive-article-date">
   	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。<br>设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。</p>
+<span id="more"></span>
+<p>sync.Pool同我们常用的pool概念不同。我们常用的比如连接池，池里存放的是空闲的链接，当需要时从池中取出。而sync.Pool存放的并不是对象，当需要这个对象时再从sync.Pool中取出。sync.Pool存放的是对象的内存空间。应用sync.Pool，每次不用重新分配新的空间，而是服用sync.Pool中存放的已有空间。</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">type Pool struct &#123;</span><br><span class="line">	noCopy noCopy</span><br><span class="line"></span><br><span class="line">	local     unsafe.Pointer  </span><br><span class="line">	localSize uintptr         </span><br><span class="line"></span><br><span class="line">	victim     unsafe.Pointer </span><br><span class="line">	victimSize uintptr        </span><br><span class="line">	 </span><br><span class="line">	New func() interface&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>noCopy 该字段用来约束在第一次使用后不能被复制。<a target="_blank" rel="noopener" href="https://github.com/golang/go/issues/8005#issuecomment-190753527">参见</a></li>
+<li>local 每个P都会在本地上分配这样一个poolLocal，索引值就是p的id。local是一个poolLocalInternal的切片指针。private存放的对象只能由创建的P读写，shared则会在多个P之间共享。 </li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type poolLocalInternal struct &#123;</span><br><span class="line">	private interface&#123;&#125; </span><br><span class="line">	shared  poolChain   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>localSice</li>
+<li>victim 会将pool内数据拷贝一份，避免GC将其清空，即使没有引用的内容也可以保留最多两轮GC。</li>
+<li>victimSize</li>
+<li>New 创建时候指定New方法用于创建默认对象。当Get()时池内没有元素，会调用New方法新分配一个空间并返回。</li>
+</ul>
+<h3 id="初始化操作"><a href="#初始化操作" class="headerlink" title="初始化操作"></a>初始化操作</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func init() &#123;</span><br><span class="line">	runtime_registerPoolCleanup(poolCleanup)</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">func poolCleanup() &#123;</span><br><span class="line">	for _, p := range oldPools &#123;</span><br><span class="line">		p.victim = nil</span><br><span class="line">		p.victimSize = 0</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	for _, p := range allPools &#123;</span><br><span class="line">		p.victim = p.local</span><br><span class="line">		p.victimSize = p.localSize</span><br><span class="line">		p.local = nil</span><br><span class="line">		p.localSize = 0</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	oldPools, allPools = allPools, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
-          
+<p>pool.go文件中通过init()方法初始化注册了一个函数poolCleanup()，这个函数会在每次GC前STW的时候唤醒。<br>1、现将oldPools中的victim置为空。<br>2、将当前local中的内容存放到victim中。<br>3、oldPools指向allPools，allPools置空。<br>victim为golang1.13新增的字段，通过此方式保证池中的对象保留最多两轮GC。</p>
+<h3 id="Put"><a href="#Put" class="headerlink" title="Put"></a>Put</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) Put(x interface&#123;&#125;) &#123;</span><br><span class="line">	if x == nil &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		if fastrand()%4 == 0 &#123;</span><br><span class="line">			// Randomly drop x on floor.</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line">		race.ReleaseMerge(poolRaceAddr(x))</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l, _ := p.pin()</span><br><span class="line">	if l.private == nil &#123;</span><br><span class="line">		l.private = x</span><br><span class="line">		x = nil</span><br><span class="line">	&#125;</span><br><span class="line">	if x != nil &#123;</span><br><span class="line">		l.shared.pushHead(x)</span><br><span class="line">	&#125;</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Put()方法会在放如池前，丢弃25%的对象，这部分对象的空间不会被复用。</li>
+<li>p.pin()获取本地的池。</li>
+<li>pool优先把元素放在private池中，如果private不为空，则放在shared池中。</li>
+</ul>
+<h3 id="Get"><a href="#Get" class="headerlink" title="Get"></a>Get</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) Get() interface&#123;&#125; &#123;</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l, pid := p.pin()</span><br><span class="line">	x := l.private</span><br><span class="line">	l.private = nil</span><br><span class="line">	if x == nil &#123;</span><br><span class="line">		// Try to pop the head of the local shard. We prefer</span><br><span class="line">		// the head over the tail for temporal locality of</span><br><span class="line">		// reuse.</span><br><span class="line">		x, _ = l.shared.popHead()</span><br><span class="line">		if x == nil &#123;</span><br><span class="line">			x = p.getSlow(pid)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	if race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">		if x != nil &#123;</span><br><span class="line">			race.Acquire(poolRaceAddr(x))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	if x == nil &amp;&amp; p.New != nil &#123;</span><br><span class="line">		x = p.New()</span><br><span class="line">	&#125;</span><br><span class="line">	return x</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>p.pin()获取本地的池和当前P的id。</li>
+<li>首先从本地的private中读取，若取不到则从本地的shared中取。</li>
+<li>若依然取不到，则会通过getSlow()方法从其他的P中获取。</li>
+<li>如果其他的P中依然没有则会调用New()方法新分配一个空间返回。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) pin() (*poolLocal, int) &#123;</span><br><span class="line">	pid := runtime_procPin()</span><br><span class="line">	s := atomic.LoadUintptr(&amp;p.localSize) // load-acquire</span><br><span class="line">	l := p.local                          // load-consume</span><br><span class="line">	if uintptr(pid) &lt; s &#123;</span><br><span class="line">		return indexLocal(l, pid), pid</span><br><span class="line">	&#125;</span><br><span class="line">	return p.pinSlow()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> pin()方法会首先将当前G同当前的P绑定，禁用抢占，并且返回P的本地池和P的id。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) getSlow(pid int) interface&#123;&#125; &#123;</span><br><span class="line">	size := atomic.LoadUintptr(&amp;p.localSize) // load-acquire</span><br><span class="line">	locals := p.local                        // load-consume</span><br><span class="line">	</span><br><span class="line">	for i := 0; i &lt; int(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i+1)%int(size))</span><br><span class="line">		if x, _ := l.shared.popTail(); x != nil &#123;</span><br><span class="line">			return x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	size = atomic.LoadUintptr(&amp;p.victimSize)</span><br><span class="line">	if uintptr(pid) &gt;= size &#123;</span><br><span class="line">		return nil</span><br><span class="line">	&#125;</span><br><span class="line">	locals = p.victim</span><br><span class="line">	l := indexLocal(locals, pid)</span><br><span class="line">	if x := l.private; x != nil &#123;</span><br><span class="line">		l.private = nil</span><br><span class="line">		return x</span><br><span class="line">	&#125;</span><br><span class="line">	for i := 0; i &lt; int(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i)%int(size))</span><br><span class="line">		if x, _ := l.shared.popTail(); x != nil &#123;</span><br><span class="line">			return x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	atomic.StoreUintptr(&amp;p.victimSize, 0)</span><br><span class="line"></span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>getSlow(）方法会先从其他的P的shared中偷取空间。<br>如果没有偷到，则会在本地的victim中获取。然后再次从其他的P中偷取空间。<br>从源码中可以看出，当pool从本地的shared中取对象时从队列的头部取出，从其他P偷取对象的时候是从尾部取出。</p>
+<p><img src="/image/pool/pool-get.png" alt="Get流程图"><br>流程图如上</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/7_pool/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/8_map/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          理解Map
+        
+      </div>
+    </a>
+  
+  
+    <a href="/6_once/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">sync.Once</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">« Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next »</a>
-    </nav>
   
 
+  
 
 
           </div>
@@ -462,8 +360,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

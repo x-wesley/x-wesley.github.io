@@ -6,18 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>Redis 持久化 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/2/index.html">
+  <meta name="description" content="因为Redis是内存数据库，他将数据库状态存储在内存里面，所以如果一旦服务器进程退出，那么服务器中的数据库状态也会消失不见。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 持久化">
+<meta property="og:url" content="https://gopher.vip/5_redis-persistence/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="因为Redis是内存数据库，他将数据库状态存储在内存里面，所以如果一旦服务器进程退出，那么服务器中的数据库状态也会消失不见。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gopher.vip/image/redis-persistence/redis-persistence0.png">
+<meta property="article:published_time" content="2019-05-22T13:49:32.000Z">
+<meta property="article:modified_time" content="2021-05-25T15:32:10.086Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gopher.vip/image/redis-persistence/redis-persistence0.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -139,307 +143,211 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-5_redis-persistence" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis 持久化
+    </h1>
+  
+
+        
+        <a href="/5_redis-persistence/" class="archive-article-date">
+  	<time datetime="2019-05-22T13:49:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-22</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>因为Redis是内存数据库，他将数据库状态存储在内存里面，所以如果一旦服务器进程退出，那么服务器中的数据库状态也会消失不见。</p>
+<span id="more"></span>
+
+<h3 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h3><p>Redis提供了RDB持久化功能，将数据库状态保存到磁盘里面，避免数据意外丢失。</p>
+<p>RDB文件创建有两种模式：被动模式、主动模式。</p>
+<h4 id="被动模式"><a href="#被动模式" class="headerlink" title="被动模式"></a>被动模式</h4><p>被动模式有用户触发，有两个Redis命令可以用于生成RDB文件</p>
+<h5 id="SAVE"><a href="#SAVE" class="headerlink" title="SAVE"></a>SAVE</h5><p>SAVE命令会阻塞Redis服务器进程，知道RDB文件创建完毕，在服务器进程阻塞期间，服务器不能处理任何命令请求</p>
+<h5 id="BGSAVE"><a href="#BGSAVE" class="headerlink" title="BGSAVE"></a>BGSAVE</h5><ul>
+<li>BGSAVE命令会派生出一个子进程，然后又子进程负责创建RDB文件</li>
+<li>在BGSAVE命令执行期间，客户端发送的SAVE命令会被拒绝。</li>
+<li>在BGSAVE命令执行期间，客户端发送的BGSAVE命令会被拒绝。</li>
+<li>在BGSAVE命令执行期间，BGREWRITEAOF命令会被延迟到BGSAVE命令执行完毕后执行。</li>
+<li>如果BGREWRITEAOF命令正在执行，那么BGSAVE命令会被服务器拒绝。</li>
+</ul>
+<h4 id="主动模式"><a href="#主动模式" class="headerlink" title="主动模式"></a>主动模式</h4><p>用户可以通过配置服务器的save选项，让服务器每个一段时间执行一次BGSAVE命令。</p>
+<p>save &lt;time&gt; &lt;cnt&gt;<br>表示服务器在&lt;time&gt;秒内，对数据可进行了至少 &lt;cnt&gt;次修改，则会触发一次BGSAVE命令。</p>
+<p>服务器在载入RDB文件期间，会一直处于阻塞状态，知道字啊如工作完毕为止。</p>
+<h3 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h3><p>AOF持久化是通过保存Redis服务器执行的写命令来记录数据库状态的。</p>
+<blockquote>
+<p>客户端 —<font size=1>(发送写明令)</font>—&gt; 服务器 —<font size=1>(保存被执行的谢明令)</font>—&gt; AOF文件</p>
+</blockquote>
+<h4 id="AOF持久化的实现"><a href="#AOF持久化的实现" class="headerlink" title="AOF持久化的实现"></a>AOF持久化的实现</h4><p>1、命令追加<br>当AOF功能处于打开状态时，服务器在执行完一个写命令之后，会以协议格式将被执行的写命令追加到服务器状态的末尾。<br>2、AOF文件的写入<br>服务器配置的appendfsync选项来决定内容写入和保存吧到AOF文件的时机。</p>
+<table>
+    <tr>
+        <th>appendfsync选项值</th>
+        <th>行为</th>
+    </tr>
+    <tr>
+        <td>always</td>
+        <td>将缓冲区的所有内容写入并同步到AOF文件</td>
+    </tr>
+    <tr>
+        <td>everysec(默认选项)</td>
+        <td>将缓冲区中的所有内容写入到AOF文件中，如果上次同步AOF文件的时候距离现在超过1秒钟，<br>那么再次对AOF文件进行同步，并且这个同步操作是有一个线程专门负责</td>
+    </tr>
+    <tr>
+        <td>no</td>
+        <td>将缓冲区的所有内容写入到AOF，但并不对AOF文件进行同步，何时同步由操作系统来决定</td>
+    </tr>        
+</table>
+
+<h4 id="AOF文件的载入与数据还原"><a href="#AOF文件的载入与数据还原" class="headerlink" title="AOF文件的载入与数据还原"></a>AOF文件的载入与数据还原</h4><p>1、创建一个不带网络连接的为客户端。<br>2、从AOF文件中分析并读取一条写明令。<br>3、使用伪客户端执行被读出的写明令。<br>4、重复执行2-3步，直到AOF文件中的所有命令都被处理完毕。</p>
+<h4 id="AOF重写"><a href="#AOF重写" class="headerlink" title="AOF重写"></a>AOF重写</h4><p>AOF持久化是通过保存写命令记录数据库状态，AOF文件中的内容会越来越多，如果不加以控制，过大的AOF文件会对Redis宿主机造成影响，且还原数据所需要的时间也会很久。为了解决这个问题，Redis提供了AOF重写功能。通过该功能，Redis服务器创建一个新的AOF文件替代现有的AOF文件，新旧两个文件保存的数据库状态相同，但是新的AOF文件不会包含任何浪费空间的冗余命令。<br>服务器直接从数据库中读取数据状态，并简化执行命令。用一条命令去记录键值对替代之前记录这个键值对的多条命令。</p>
+<p>Redis服务器排上出一个子进程来执行AOF重写。<br>子进程进行AOF重写期间，服务器进程可以继续处理命令请求。<br>子进程带有服务器进程的数据副本，是用子进程而不是线程，可以在避免使用锁的情况下，保证数据的安全性。</p>
+<p>子进程执行AOF重写期间，服务器进程需要执行以下三个工作。<br>1、执行客户端发来的命令。<br>2、将执行后的写命令追加到AOF缓冲区。<br>3、将执行后的写命令追加到AOF重写缓冲区。</p>
+<p>当子进程完成AOF重写工作之后，他会向父进程发送一个信号，父进程会执行以下工作：<br>1、将AOF重写缓冲区中的所有内容自恶如到新的AOF文件中。<br>2、对新的AOF文件进行改名，原子地覆盖现有的AOF文件。</p>
+<h4 id="Redis恢复"><a href="#Redis恢复" class="headerlink" title="Redis恢复"></a>Redis恢复</h4><p><img src="/image/redis-persistence/redis-persistence0.png" alt="Redis恢复流程图"><br>优先加载AOF，当没有AOF时才加载RDB。当AOF或者RDB存在错误，则加载失败。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/15_http-code/" class="archive-article-date">
-  	<time datetime="2020-05-01T02:39:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/15_http-code/">HTTP状态码整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/14_slice-grow/" class="archive-article-date">
-  	<time datetime="2020-04-05T05:22:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/14_slice-grow/">slice的追加和扩容</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/13_channel/" class="archive-article-date">
-  	<time datetime="2020-03-28T09:01:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/13_channel/">理解channel</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/12_sync.WaitGroup/" class="archive-article-date">
-  	<time datetime="2020-02-22T07:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/11_make&new/">make &amp; new</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+
       
+
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
+      </div>
+    </span>
+  </div>
+</div>
 
-        <div class="article-info info-on-right">
-          
-          
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/5_redis-persistence/" alt="微信分享二维码">
+    </div>
+</div>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/6_once/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          sync.Once
+        
+      </div>
+    </a>
+  
+  
+    <a href="/4_redis-expire/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Redis过期时间整理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">« Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next »</a>
-    </nav>
-  
-
 
 
           </div>
@@ -462,8 +370,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

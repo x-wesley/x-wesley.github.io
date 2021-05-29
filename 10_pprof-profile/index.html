@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>pprof---- heap profile 字段整理 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/2/index.html">
+  <meta name="description" content="Golang性能优化比较受欢迎的方式是go tool，可以非常直观的把内存、cpu等资源展现给用户。由于我司对生产环境的限制，无法暴露pprof的端口。这导致导致我只能dump一份profile文件进行分析(http:&#x2F;&#x2F;{ip}:{port}&#x2F;debug&#x2F;pprof&#x2F;heap?debug&#x3D;1)。这份纯文本信息的profile对于智商低下又没有耐心的我来讲，wqnmlgb的。因此对这份操蛋的文本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pprof---- heap profile 字段整理">
+<meta property="og:url" content="https://gopher.vip/10_pprof-profile/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="Golang性能优化比较受欢迎的方式是go tool，可以非常直观的把内存、cpu等资源展现给用户。由于我司对生产环境的限制，无法暴露pprof的端口。这导致导致我只能dump一份profile文件进行分析(http:&#x2F;&#x2F;{ip}:{port}&#x2F;debug&#x2F;pprof&#x2F;heap?debug&#x3D;1)。这份纯文本信息的profile对于智商低下又没有耐心的我来讲，wqnmlgb的。因此对这份操蛋的文本">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-11-29T13:56:36.000Z">
+<meta property="article:modified_time" content="2021-05-25T15:32:10.086Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -139,307 +141,221 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-10_pprof-profile" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/15_http-code/" class="archive-article-date">
-  	<time datetime="2020-05-01T02:39:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/15_http-code/">HTTP状态码整理</a>
+    <h1 class="article-title" itemprop="name">
+      pprof---- heap profile 字段整理
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/14_slice-grow/" class="archive-article-date">
-  	<time datetime="2020-04-05T05:22:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/14_slice-grow/">slice的追加和扩容</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/13_channel/" class="archive-article-date">
-  	<time datetime="2020-03-28T09:01:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/13_channel/">理解channel</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/12_sync.WaitGroup/" class="archive-article-date">
-  	<time datetime="2020-02-22T07:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/11_make&new/">make &amp; new</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
+        
+        <a href="/10_pprof-profile/" class="archive-article-date">
   	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>Golang性能优化比较受欢迎的方式是go tool，可以非常直观的把内存、cpu等资源展现给用户。<br>由于我司对生产环境的限制，无法暴露pprof的端口。这导致导致我只能dump一份profile文件进行分析(http://{ip}:{port}/debug/pprof/heap?debug=1)。<br>这份纯文本信息的profile对于智商低下又没有耐心的我来讲，wqnmlgb的。因此对这份操蛋的文本整理了一下。</p>
+</blockquote>
+<span id="more"></span>
 
-        <div class="article-info info-on-right">
-          
-          
+<p>直接上文本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">heap profile: 3190: 77516056 [54762: 612664248] @ heap/1048576</span><br><span class="line">1: 29081600 [1: 29081600] @ 0x89368e 0x894cd9 0x8a5a9d 0x8a9b7c 0x8af578 0x8b4441 0x8b4c6d 0x8b8504 0x8b2bc3 0x45b1c1</span><br><span class="line">#    0x89368d    github.com/syndtr/goleveldb/leveldb/memdb.(*DB).Put+0x59d</span><br><span class="line">#    0x894cd8    xxxxx/storage/internal/memtable.(*MemTable).Set+0x88</span><br><span class="line">#    0x8a5a9c    xxxxx/storage.(*snapshotter).AppendCommitLog+0x1cc</span><br><span class="line">#    0x8a9b7b    xxxxx/storage.(*store).Update+0x26b</span><br><span class="line">#    0x8af577    xxxxx/config.(*config).Update+0xa7</span><br><span class="line">#    0x8b4440    xxxxx/naming.(*naming).update+0x120</span><br><span class="line">#    0x8b4c6c    xxxxx/naming.(*naming).instanceTimeout+0x27c</span><br><span class="line">#    0x8b8503    xxxxx/naming.(*naming).(xxxxx/naming.instanceTimeout)-fm+0x63</span><br><span class="line"></span><br><span class="line">0: 0 [1: 32] @ 0x4e885e 0x4e8c3b 0x5c8426 0x5c5de1 0x5c5e86 0x5c82cf 0x5c8122 0x5f96f4 0x618476 0x61797b 0x6161cf 0x6da732 0x45e3d1</span><br><span class="line"># 0x4e885d strings.genSplit+0x6d      /home/fuck/go/src/strings/strings.go:242</span><br><span class="line"># 0x4e8c3a strings.Split+0x5a      /home/fuck/go/src/strings/strings.go:294</span><br><span class="line"># 0x5c8425 encoding/asn1.parseFieldParameters+0x75    /home/fuck/go/src/encoding/asn1/common.go:92</span><br><span class="line"># 0x5c5de0 encoding/asn1.parseField+0x13b0     /home/fuck/go/src/encoding/asn1/asn1.go:880</span><br><span class="line"># 0x5c5e85 encoding/asn1.parseField+0x1455     /home/fuck/go/src/encoding/asn1/asn1.go:880</span><br><span class="line"># 0x5c82ce encoding/asn1.UnmarshalWithParams+0x14e    /home/fuck/go/src/encoding/asn1/asn1.go:1019</span><br><span class="line"># 0x5c8121 encoding/asn1.Unmarshal+0x71     /home/fuck/go/src/encoding/asn1/asn1.go:1012</span><br><span class="line"># 0x5f96f3 crypto/x509.ParseCertificate+0x73    /home/fuck/go/src/crypto/x509/x509.go:1361</span><br><span class="line"># 0x618475 crypto/tls.(*clientHandshakeState).doFullHandshake+0x1d5 /home/fuck/go/src/crypto/tls/handshake_client.go:278</span><br><span class="line"># 0x61797a crypto/tls.(*Conn).clientHandshake+0xf9a   /home/fuck/go/src/crypto/tls/handshake_client.go:228</span><br><span class="line"># 0x6161ce crypto/tls.(*Conn).Handshake+0x18e    /home/fuck/go/src/crypto/tls/conn.go:1307</span><br><span class="line"># 0x6da731 net/http.(*Transport).dialConn.func3+0x41   /home/fuck/go/src/net/http/transport.go:1151</span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"># runtime.MemStats</span><br><span class="line"># Alloc = 4802944352</span><br><span class="line"># TotalAlloc = 1404669967480</span><br><span class="line"># Sys = 5332457976</span><br><span class="line"># Lookups = 2621542</span><br><span class="line"># Mallocs = 2841427639</span><br><span class="line"># Frees = 2828137027</span><br><span class="line"># HeapAlloc = 4802944352</span><br><span class="line"># HeapSys = 4896391168</span><br><span class="line"># HeapIdle = 67641344</span><br><span class="line"># HeapInuse = 4828749824</span><br><span class="line"># HeapReleased = 0</span><br><span class="line"># HeapObjects = 13290612</span><br><span class="line"># Stack = 217743360 / 217743360</span><br><span class="line"># MSpan = 26492992 / 26886144</span><br><span class="line"># MCache = 79856 / 98304</span><br><span class="line"># BuckHashSys = 4259669</span><br><span class="line"># GCSys = 172552192</span><br><span class="line"># OtherSys = 14527139</span><br><span class="line"># NextGC = 5113048624</span><br><span class="line"># LastGC = 1588245279019579732</span><br><span class="line"># PauseNs = [4281873 79607892 10298276 3577377 9032376 92984122 10894675 10605293 35072386 80802259 21961688 3369392 6804295 7066417 14120024 10595493 17352404 5580436 7132756 10989936 35502754 5863234 4311680 13233962 4366185 6664149 4753501 10711953 11911961 17393239 3486057 7378275 11881548 24830270 6527204 8957707 77753256 8657258 9688997 13872437 7064026 14626594 47108595 14804040 11625431 90105029 7588021 10249529 18482369 73935772 7022244 4648189 5054670 65898845 5386386 5831619 67782834 3703476 16680852 4628033 18443029 6804512 15941676 7828868 7856670 11334182 6198923 15441953 5834247 8577567 4345182 11762259 98613226 87466558 87122816 12530555 16953095 5324258 7242826 6679637 9236206 10609648 88917599 4872014 5187834 15083268 71378372 105803921 4514738 5670109 3375964 10498770 84073449 17545558 6074350 4884827 17081243 10612729 17039700 5600965 8772137 4401933 16174889 12218343 8244281 87081561 5062201 21476612 10926767 15300186 5586003 6307001 3596062 11677463 13531077 23114896 5097933 15668785 10852335 4722594 2953128 8979175 8718939 81084038 11093074 4909589 5567814 26439718 16177872 23960809 6462473 8809310 9521860 2348946 8042504 3506725 93888385 8709298 4625996 8046971 65666741 6239092 7786597 9187220 9803713 12959391 6329632 11140793 8416272 4663026 13978436 12902170 83861162 3453327 21523755 93673990 93698723 12192304 25988841 4341226 6473202 17375055 6839665 2288176 14848472 15223259 8139065 6264161 9437826 20486374 90674088 5953386 11220982 62485352 81413149 12769413 82395277 86008183 6995960 9910539 12984582 7304630 2231746 7614975 7148882 5037260 5250786 2896686 9468058 10089197 14858723 53398122 9091018 1440226 8145363 6986374 6021739 73203242 17173524 87210962 84385753 60339559 7399470 7630753 7746200 3651534 7697942 8172755 8792416 6020350 8929953 83864768 15766203 19897641 17017273 6886037 8045397 26598424 19241628 8774616 7313713 76364427 7932390 14381330 74956822 90505212 8731139 5742971 8171950 14120218 21260175 13308890 2765750 9216443 4934905 4091887 7348531 9983311 19958068 6567580 11217531 11215862 9205844 6873288 7251326 5548554 10090893 19774172 27014327 10992286 9107627 86406878 9694735 88617194 7232045 19154128]</span><br><span class="line"># PauseEnd = [1588245090426206614 1588245091113111951 1588245091922912374 1588245092829101667 1588245093632753439 1588245094428983355 1588245095133660650 1588245095835419578 1588245096533927655 1588245097227388310 1588245097939910751 1588245098626661960 1588245099329670849 1588245100149832301 1588245100861610721 1588245101743231210 1588245102845329467 1588245103628053277 1588245104355257337 1588245105164798233 1588245105928911937 1588245106632691328 1588245107426555445 1588245108131564174 1588245108951509425 1588245109822993456 1588245110742291159 1588245111435898249 1588245112245825824 1588245113155252780 1588245113941147298 1588245114828776950 1588245115633950845 1588245116544378559 1588245117423030296 1588245118237065909 1588245119033119579 1588245119835247304 1588245120637864821 1588245121546780436 1588245122426875496 1588245123241346381 1588245124239454883 1588245125052043667 1588245125939690900 1588245126734403084 1588245127631034400 1588245128532872846 1588245129337459098 1588245130230958706 1588245131227066012 1588245132230904251 1588245133222071715 1588245134120371545 1588245135022290653 1588245135927900603 1588245136820252014 1588245137750008340 1588245138739126040 1588245139656002507 1588245140432721934 1588245141234290488 1588245142126873972 1588245143042979277 1588245143953944480 1588245144838658312 1588245145737835506 1588245146639611592 1588245147531968030 1588245148443615656 1588245149522897621 1588245150723870307 1588245151728962925 1588245152730204959 1588245153729112995 1588245154631575375 1588245155830514008 1588245157032478495 1588245158030351196 1588245158944473562 1588245159928619669 1588245160953905358 1588245161841900476 1588245162830660165 1588245163937302400 1588245164942797068 1588245165940258872 1588245166933208051 1588245167928167368 1588245169036262249 1588245170046142635 1588245171148183938 1588245172232742197 1588245173322924924 1588245174235350166 1588245175417912272 1588245176340399922 1588245177236027128 1588245178240567244 1588245179226640596 1588245180228557448 1588245181229777099 1588245182239832998 1588245183226908737 1588245184425422001 1588245185438621659 1588245186431081603 1588245187532915097 1588245188764128979 1588245189932743119 1588245191019221338 1588245192038532515 1588245193236874523 1588245194352196067 1588245195460915901 1588245196633904472 1588245197829899561 1588245198932030625 1588245200041501211 1588245201146690111 1588245202323124491 1588245203333737941 1588245204340018668 1588245205413701013 1588245206434981568 1588245207427920379 1588245208636379949 1588245209920902453 1588245210939323553 1588245212027576205 1588245213028263256 1588245214039065418 1588245215228323020 1588245216333900391 1588245217553884465 1588245218845172959 1588245220027703894 1588245221160229456 1588245222231083402 1588245223340863987 1588245224449866067 1588245225732372430 1588245226843519760 1588245227948873049 1588245229253890541 1588245230445901211 1588245231642697177 1588245232925612021 1588245234059048875 1588245235427166022 1588245236819761857 1588245238021034988 1588245239231893179 1588245240446818270 1588245241676577759 1588245242931046915 1588245244126583000 1588245245432042085 1588245246630293557 1588245247833913892 1588245249037065932 1588245250272103963 1588245251622241287 1588245252925651604 1588245254420725956 1588245255638117023 1588245256833016659 1588245258124419100 1588245259336868746 1588245260536970161 1588245261848972517 1588245263120326859 1588245264559073837 1588245265913890961 1588245267112951462 1588245268317116255 1588245269623977718 1588245270930635665 1588245272315571900 1588245273635411175 1588245274951063963 1588245276318386737 1588245277521957021 1588245279019579732 1588245046421753944 1588245046926014618 1588245047433900626 1588245048024533949 1588245048534391044 1588245049128590573 1588245049731133637 1588245050333572840 1588245050925499436 1588245051523902797 1588245052030945314 1588245052618916771 1588245053133664119 1588245053712946073 1588245054240229209 1588245054813121062 1588245055328898221 1588245055826165013 1588245056426582010 1588245056934962253 1588245057426095405 1588245058021774863 1588245058535594544 1588245059037412529 1588245059532879095 1588245060129244430 1588245060730793374 1588245061517763499 1588245062117428446 1588245062650487490 1588245063236687779 1588245063855220600 1588245064433964566 1588245065025900535 1588245065618216190 1588245066140952773 1588245066828945521 1588245067518274607 1588245068147889846 1588245068732530261 1588245069246128440 1588245069845334567 1588245070439981190 1588245071131227314 1588245071737659750 1588245072335902600 1588245073027934857 1588245073629659381 1588245074226846690 1588245074823699268 1588245075429076563 1588245076023553189 1588245076624929343 1588245077258040357 1588245078025228064 1588245078641895604 1588245079237356322 1588245080032916964 1588245080637939867 1588245081323087922 1588245082026334415 1588245082831267511 1588245083623931096 1588245084236051917 1588245085030308022 1588245085638266416 1588245086324445556 1588245087012944213 1588245087640895513 1588245088425008692 1588245089130350307 1588245089739022126]</span><br><span class="line"># NumGC = 3768</span><br><span class="line"># NumForcedGC = 0</span><br><span class="line"># GCCPUFraction = 0.0015093457740409802</span><br><span class="line"># DebugGC = false</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>以上是我在互联网上copy的一份profile文本，接下来我们详细研究研究。<br>主要分为三大部分：进程heap的整体使用情况、MemProfileRecord、MemStats信息。</p>
+<h5 id="1、进程heap的整体使用情况。"><a href="#1、进程heap的整体使用情况。" class="headerlink" title="1、进程heap的整体使用情况。"></a>1、进程heap的整体使用情况。</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">heap profile: 3190: 77516056 [54762: 612664248] @ heap/1048576</span><br></pre></td></tr></table></figure>
 
+<p>从heap profile后开始看。</p>
+<ul>
+<li>{num1}: {num2} 冒号前的数字num1表示进程中正在使用的对象个数，冒号后的数字num2表示进程中正在使用的内存大小（单位byte）。</li>
+<li>[{num3}: {num4}] 中括号里表示的当前进程分配信息，冒号前的数字num3表示进程中分配的对象个数，冒号后的数字num4表示进程中分配的内存空间大小（单位byte）。</li>
+<li>@ heap/{num5} num5的值是 2*MemProfileRate，runtime.MemProfileRate为采样率。控制内存profile记录的内存分配的采样频率，内存profile记录器平均每分配MemProfileRate字节进行一次分配采样。</li>
+</ul>
+<h5 id="2、MemProfileRecord信息"><a href="#2、MemProfileRecord信息" class="headerlink" title="2、MemProfileRecord信息"></a>2、MemProfileRecord信息</h5><p> MemProfileRecord用于描述某个调用栈序列申请和释放的活动对象等信息。在dump出来的文本中，MemProfileRecord信息信息占据了绝大部分比重。</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">1: 29081600 [1: 29081600] @ 0x89368e 0x894cd9 0x8a5a9d 0x8a9b7c 0x8af578 0x8b4441 0x8b4c6d 0x8b8504 0x8b2bc3 0x45b1c1</span><br><span class="line">#    0x89368d    github.com/syndtr/goleveldb/leveldb/memdb.(*DB).Put+0x59d</span><br><span class="line">#    0x894cd8    xxxxx/storage/internal/memtable.(*MemTable).Set+0x88</span><br><span class="line">#    0x8a5a9c    xxxxx/storage.(*snapshotter).AppendCommitLog+0x1cc</span><br><span class="line">#    0x8a9b7b    xxxxx/storage.(*store).Update+0x26b</span><br><span class="line">#    0x8af577    xxxxx/config.(*config).Update+0xa7</span><br><span class="line">#    0x8b4440    xxxxx/naming.(*naming).update+0x120</span><br><span class="line">#    0x8b4c6c    xxxxx/naming.(*naming).instanceTimeout+0x27c</span><br><span class="line">#    0x8b8503    xxxxx/naming.(*naming).(xxxxx/naming.instanceTimeout)-fm+</span><br><span class="line"></span><br><span class="line">0: 0 [1: 32] @ 0x4e885e 0x4e8c3b 0x5c8426 0x5c5de1 0x5c5e86 0x5c82cf 0x5c8122 0x5f96f4 0x618476 0x61797b 0x6161cf 0x6da732 0x45e3d1</span><br><span class="line"># 0x4e885d strings.genSplit+0x6d      /home/fuck/go/src/strings/strings.go:242</span><br><span class="line"># 0x4e8c3a strings.Split+0x5a      /home/fuck/go/src/strings/strings.go:294</span><br><span class="line"># 0x5c8425 encoding/asn1.parseFieldParameters+0x75    /home/fuck/go/src/encoding/asn1/common.go:92</span><br><span class="line"># 0x5c5de0 encoding/asn1.parseField+0x13b0     /home/fuck/go/src/encoding/asn1/asn1.go:880</span><br><span class="line"># 0x5c5e85 encoding/asn1.parseField+0x1455     /home/fuck/go/src/encoding/asn1/asn1.go:880</span><br><span class="line"># 0x5c82ce encoding/asn1.UnmarshalWithParams+0x14e    /home/fuck/go/src/encoding/asn1/asn1.go:1019</span><br><span class="line"># 0x5c8121 encoding/asn1.Unmarshal+0x71     /home/fuck/go/src/encoding/asn1/asn1.go:1012</span><br><span class="line"># 0x5f96f3 crypto/x509.ParseCertificate+0x73    /home/fuck/go/src/crypto/x509/x509.go:1361</span><br><span class="line"># 0x618475 crypto/tls.(*clientHandshakeState).doFullHandshake+0x1d5 /home/fuck/go/src/crypto/tls/handshake_client.go:278</span><br><span class="line"># 0x61797a crypto/tls.(*Conn).clientHandshake+0xf9a   /home/fuck/go/src/crypto/tls/handshake_client.go:228</span><br><span class="line"># 0x6161ce crypto/tls.(*Conn).Handshake+0x18e    /home/fuck/go/src/crypto/tls/conn.go:1307</span><br><span class="line"># 0x6da731 net/http.(*Transport).dialConn.func3+0x41   /home/fuck/go/src/net/http/transport.go:1151</span><br></pre></td></tr></table></figure>
+
+<h6 id="第一行同heap-profile信息表述大体相同。"><a href="#第一行同heap-profile信息表述大体相同。" class="headerlink" title="第一行同heap profile信息表述大体相同。"></a>第一行同heap profile信息表述大体相同。</h6><ul>
+<li>{num1}: {num2} 冒号前的数字num1表示当前调用栈正在使用的对象个数，冒号后的数字num2表示当前调用栈正在使用的内存大小（单位byte）。</li>
+<li>[{num3}: {num4}] 中括号里表示的当前调用栈分配信息，冒号前的数字num3表示当前调用栈分配的对象个数，冒号后的数字num4表示当前调用栈分配的内存空间大小（单位byte）。</li>
+<li>@ 后面的十六进制集合表示的是当前调用栈的栈针指向地址。</li>
+</ul>
+<h6 id="其余以-开始的几行表示的是栈信息，其格式为有两种形式（可能版本不同有少许差距）"><a href="#其余以-开始的几行表示的是栈信息，其格式为有两种形式（可能版本不同有少许差距）" class="headerlink" title="其余以#开始的几行表示的是栈信息，其格式为有两种形式（可能版本不同有少许差距）"></a>其余以#开始的几行表示的是栈信息，其格式为有两种形式（可能版本不同有少许差距）</h6><ul>
+<li># {frame.PC}<br> frame.PC 表示这个帧中位置的程序计数器。对于调用另一帧的帧，这将是调用指令的程序计数器。由于内联，多个帧可能具有相同的PC值，但不同的符号信息。</li>
+<li># {frame.PC}   {name}+{frame.PC-frame.Entry}  {frame.File}:{frame.Line}<br> frame.PC 同上<br> name   此调用帧的包路径限定函数名。<br> frame.Entry 方法的入口程序计数器。<br> frame.File  文件名。<br> frame.Line  在此帧中文件的行号。</li>
+</ul>
+<h5 id="3、MemStats信息"><a href="#3、MemStats信息" class="headerlink" title="3、MemStats信息"></a>3、MemStats信息</h5><p> 通过runtime.ReadMemStats()读取的runtime.MemStats信息</p>
+<ul>
+<li>Alloc：是已分配堆对象的字节。这与HeapAlloc相同。</li>
+<li>TotalAlloc ：为堆对象分配的累积字节。TotalAlloc在分配堆对象时增加，但与Alloc和HeapAlloc不同，它在释放对象时不会减少。</li>
+<li>Sys：从操作系统获得的内存的总字节数。是下面XSys字段的总和。Sys测量Go运行时为堆、栈和其他内部数据结构保留的虚拟地址空间。尽管通常情况下，并不是所有的虚拟地址空间都由物理内存支持这一切都发生在某个时刻。</li>
+<li>Lookups：由运行时执行的指针查找数。这对于调试运行时内部非常有用。</li>
+<li>Mallocs：分配的堆对象的累计计数。活动对象的数量是Mallocs - free。</li>
+<li>Frees：释放的堆对象的累计计数。</li>
+<li>HeapAlloc：已分配堆对象的字节。“已分配”堆对象包括所有可访问对象，以及垃圾收集器尚未释放的不可访问对象。具体地说，HeapAlloc随着堆对象的分配而增加，随着堆被扫描而减少无法访问的对象被释放。清扫在GC周期之间以增量方式进行，所以这两个进程同时发生，因此HeapAlloc趋向于平稳地变化(与典型的停止世界垃圾收集器的锯齿形成对比)。</li>
+<li>HeapSys：从操作系统获得的堆内存字节。HeapSys度量为堆保留的虚拟地址空间量。这包括虚拟地址空间被保留但尚未使用,消耗没有物理内存,但往往是小,以及虚拟地址空间的物理内存已经返回给操作系统后就未使用(见HeapReleased衡量后者)。HeapSys估计堆的最大大小。</li>
+<li>HeapIdle：是idle(未使用的)范围中的字节。idle没有对象。这些span可以(可能已经)返回到操作系统，或者可以将它们用于堆分配，或者将它们作为堆栈内存重用。HeapIdle减去heaprelease估计了可以返回给操作系统的内存数量，但是运行时保留了这些内存，所以它可以在不向操作系统请求更多内存的情况下增加堆。如果这个差异比堆大小大得多，则表明最近有一个动态堆大小的暂态峰值。</li>
+<li>HeapInuse：正在使用的span中的字节。正在使用的span中至少有一个对象。这些跨度只能用于大致相同大小的其他对象。HeapInuse - HeapAlloc估计了专门用于特定大小类的内存总量，但目前还没有使用。这是碎片的上限，但通常可以有效地重用这些内存。</li>
+<li>HeapReleased：返回给操作系统的物理内存字节。这将计算从已返回到操作系统且尚未为堆重新获取的空闲区段中获得的堆内存。</li>
+<li>HeapObjects：分配的堆对象的数量。与HeapAlloc类似，这在分配对象时增加，在清理堆和释放不可达对象时减少。</li>
+<li>Stack：{StackInuse} / {StackSys}<br>StackInuse：栈内存统计信息。栈不被认为是堆的一部分，但是运行时可以为堆栈内存重用一段堆内存，反之亦然。StackInuse是堆栈范围中的字节。正在使用的堆栈范围中至少有一个堆栈。这些跨度只能用于相同大小的其他堆栈。不存在StackIdle，因为未使用的堆栈跨度被返回到堆(因此计算为HeapIdle)。<br>StackSys：从操作系统获得的堆栈内存字节。StackSys是StackInuse，加上直接从OS获取的用于OS线程堆栈的内存(应该是最小的)。</li>
+<li>MSpan：{MSpanInuse} / {MSpanSys}<br>MSpanInuse：堆内存统计信息。下面的统计数据度量没有从堆内存中分配的运行时内部结构(通常因为它们是实现堆的一部分)。与堆或堆栈内存不同，分配给这些结构的任何内存都专用于这些结构。这些主要用于调试运行时内存开销。MSpanInuse是分配给mspan结构的字节。<br>MSpanSys：为mspan结构从操作系统获得的内存字节。</li>
+<li>MCache：{MCacheInuse} / {MCacheSys}<br>MCacheInuse：已分配的mcache结构的字节数。<br>MCacheSys：从操作系统为mcache结构获取的内存字节。</li>
+<li>BuckHashSys：分析桶哈希表的内存字节。</li>
+<li>GCSys：垃圾收集元数据中的内存字节。</li>
+<li>OtherSys：各种堆外运行时分配中的内存字节。</li>
+<li>NextGC：下一个GC周期的目标堆大小。垃圾收集器的目标是保持HeapAlloc≤NextGC。在每个GC周期结束时，根据可到达的数据量和GOGC的值计算下一个周期的目标。</li>
+<li>LastGC：自1970年(UNIX时代)以来最后一次垃圾收集完成的时间，以纳秒为单位。</li>
+<li>PauseNs：一个循环缓冲区，它以纳秒为单位记录最近的GC STW暂停时间。最近一次暂停是在PauseNs[(NumGC+255)%256]。通常，PauseNs[N%256]记录最近的N%256个GC周期中暂停的时间。每个GC周期可能有多个暂停;这是一个循环中所有暂停的总和。</li>
+<li>PauseEnd：是一个循环缓冲区，用于记录最近的GC暂停结束时间，从1970年(UNIX时代)开始，以纳秒为单位。这个缓冲区的填充方式与停顿相同。每个GC周期可能有多个暂停;这将记录一个循环中最后一个暂停的结束时间。</li>
+<li>NumGC：完成的GC周期的数量。</li>
+<li>NumForcedGC：调用GC函数的应用程序强制执行的GC周期数。</li>
+<li>GCCPUFraction：程序启动以来GC使用的可用CPU时间的分数。GCCPUFraction表示0到1之间的一个数字，其中0表示GC没有消耗任何程序的CPU。一个程序的可用CPU时间被定义为自程序启动以来GOMAXPROCS的积分。也就是说，如果GOMAXPROCS是2，并且程序已经运行了10秒，那么它的“可用CPU”是20秒。GCCPUFraction不包括用于写屏障活动的CPU时间。这与GODEBUG报告的CPU部分=gctrace=1相同。</li>
+<li>DebugGC：目前未使用。</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/10_pprof-profile/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/11_make&new/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          make &amp; new
+        
+      </div>
+    </a>
+  
+  
+    <a href="/9_sync.Map/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">理解sync.Map</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">« Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next »</a>
-    </nav>
-  
-
 
 
           </div>
@@ -462,8 +378,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

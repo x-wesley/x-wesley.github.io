@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>slice的追加和扩容 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/2/index.html">
+  <meta name="description" content="slice是Golang的动态数组，是一个使用频率极高结构，中文叫切片。其底层记录了数组的指针，当前slice的长度及容量。追加、扩容操作是slice的核心。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="slice的追加和扩容">
+<meta property="og:url" content="https://gopher.vip/14_slice-grow/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="slice是Golang的动态数组，是一个使用频率极高结构，中文叫切片。其底层记录了数组的指针，当前slice的长度及容量。追加、扩容操作是slice的核心。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-05T05:22:21.000Z">
+<meta property="article:modified_time" content="2021-05-25T15:32:10.086Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -139,307 +141,185 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-14_slice-grow" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/15_http-code/" class="archive-article-date">
-  	<time datetime="2020-05-01T02:39:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/15_http-code/">HTTP状态码整理</a>
+    <h1 class="article-title" itemprop="name">
+      slice的追加和扩容
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/14_slice-grow/" class="archive-article-date">
+        
+        <a href="/14_slice-grow/" class="archive-article-date">
   	<time datetime="2020-04-05T05:22:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-05</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/14_slice-grow/">slice的追加和扩容</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
+        
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/13_channel/" class="archive-article-date">
-  	<time datetime="2020-03-28T09:01:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/13_channel/">理解channel</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/12_sync.WaitGroup/" class="archive-article-date">
-  	<time datetime="2020-02-22T07:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/11_make&new/">make &amp; new</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
+    <div class="article-entry" itemprop="articleBody">
       
-        </div></section>
+        <blockquote>
+<p>slice是Golang的动态数组，是一个使用频率极高结构，中文叫切片。其底层记录了数组的指针，当前slice的长度及容量。追加、扩容操作是slice的核心。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>slice的结构就不逼逼了，我们直接从追加开始学习。</p>
+<h3 id="追加-append"><a href="#追加-append" class="headerlink" title="追加(append)"></a>追加(append)</h3><p>Golang的append关键字会在中间代码生成阶段的cmd/compile/internal/gc.ssa.go(func (s *state) append(n *Node, inplace bool) *ssa.Value )实现。</p>
+<p>使用 append 可以向 slice 追加元素，实际上是往底层数组添加元素。当追加元素致使其长度达到了容量时会触发扩容操作，其判断方法如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ptr, len, cap := s</span><br><span class="line">newlen := len + 3</span><br><span class="line">if uint(newlen) &gt; uint(cap) &#123;</span><br><span class="line">   newptr, len, newcap = growslice(ptr, len, cap, newlen)</span><br><span class="line">   vardef(a)        </span><br><span class="line">   *a.cap = newcap  </span><br><span class="line">   *a.ptr = newptr  </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<h3 id="扩容-growslice"><a href="#扩容-growslice" class="headerlink" title="扩容(growslice)"></a>扩容(growslice)</h3><p>growslice()在runtime/slice.go中，是slice最重要的方法之一。</p>
+<p>growslice在追加(append)期间处理slice的增长。入参为slice元素类型、旧的slice和所需的新最小容量，然后返回至少具有该容量的新slice，并将旧数据复制到其中。</p>
+<p>新的slice长度设置为就得slice长度，而不是请求新的容量。</p>
+<p>上代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">func growslice(et *_type, old slice, cap int) slice &#123;</span><br><span class="line">	if raceenabled &#123;</span><br><span class="line">		callerpc := getcallerpc()</span><br><span class="line">		racereadrangepc(old.array, uintptr(old.len*int(et.size)), callerpc, funcPC(growslice))</span><br><span class="line">	&#125;</span><br><span class="line">	if msanenabled &#123;</span><br><span class="line">		msanread(old.array, uintptr(old.len*int(et.size)))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if cap &lt; old.cap &#123;</span><br><span class="line">		panic(errorString(&quot;growslice: cap out of range&quot;))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if et.size == 0 &#123;</span><br><span class="line">		return slice&#123;unsafe.Pointer(&amp;zerobase), old.len, cap&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	newcap := old.cap</span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	if cap &gt; doublecap &#123;</span><br><span class="line">		newcap = cap</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		if old.len &lt; 1024 &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			for 0 &lt; newcap &amp;&amp; newcap &lt; cap &#123;</span><br><span class="line">				newcap += newcap / 4</span><br><span class="line">			&#125;</span><br><span class="line">			if newcap &lt;= 0 &#123;</span><br><span class="line">				newcap = cap</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	var overflow bool</span><br><span class="line">	var lenmem, newlenmem, capmem uintptr</span><br><span class="line">	switch &#123;</span><br><span class="line">	case et.size == 1:</span><br><span class="line">		lenmem = uintptr(old.len)</span><br><span class="line">		newlenmem = uintptr(cap)</span><br><span class="line">		capmem = roundupsize(uintptr(newcap))</span><br><span class="line">		overflow = uintptr(newcap) &gt; maxAlloc</span><br><span class="line">		newcap = int(capmem)</span><br><span class="line">	case et.size == sys.PtrSize:</span><br><span class="line">		lenmem = uintptr(old.len) * sys.PtrSize</span><br><span class="line">		newlenmem = uintptr(cap) * sys.PtrSize</span><br><span class="line">		capmem = roundupsize(uintptr(newcap) * sys.PtrSize)</span><br><span class="line">		overflow = uintptr(newcap) &gt; maxAlloc/sys.PtrSize</span><br><span class="line">		newcap = int(capmem / sys.PtrSize)</span><br><span class="line">	case isPowerOfTwo(et.size):</span><br><span class="line">		var shift uintptr</span><br><span class="line">		if sys.PtrSize == 8 &#123;</span><br><span class="line">			shift = uintptr(sys.Ctz64(uint64(et.size))) &amp; 63</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			shift = uintptr(sys.Ctz32(uint32(et.size))) &amp; 31</span><br><span class="line">		&#125;</span><br><span class="line">		lenmem = uintptr(old.len) &lt;&lt; shift</span><br><span class="line">		newlenmem = uintptr(cap) &lt;&lt; shift</span><br><span class="line">		capmem = roundupsize(uintptr(newcap) &lt;&lt; shift)</span><br><span class="line">		overflow = uintptr(newcap) &gt; (maxAlloc &gt;&gt; shift)</span><br><span class="line">		newcap = int(capmem &gt;&gt; shift)</span><br><span class="line">	default:</span><br><span class="line">		lenmem = uintptr(old.len) * et.size</span><br><span class="line">		newlenmem = uintptr(cap) * et.size</span><br><span class="line">		capmem, overflow = math.MulUintptr(et.size, uintptr(newcap))</span><br><span class="line">		capmem = roundupsize(capmem)</span><br><span class="line">		newcap = int(capmem / et.size)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if overflow || capmem &gt; maxAlloc &#123;</span><br><span class="line">		panic(errorString(&quot;growslice: cap out of range&quot;))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	var p unsafe.Pointer</span><br><span class="line">	if et.ptrdata == 0 &#123;</span><br><span class="line">		p = mallocgc(capmem, nil, false)</span><br><span class="line">		memclrNoHeapPointers(add(p, newlenmem), capmem-newlenmem)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		p = mallocgc(capmem, et, true)</span><br><span class="line">		if lenmem &gt; 0 &amp;&amp; writeBarrier.enabled &#123;</span><br><span class="line">			bulkBarrierPreWriteSrcOnly(uintptr(p), uintptr(old.array), lenmem)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	memmove(p, old.array, lenmem)</span><br><span class="line"></span><br><span class="line">	return slice&#123;p, old.len, newcap&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>先对入参进行一系列的判断。</li>
+<li>有一个简短、清晰的逻辑计算扩容后容量大小。<br>1、如果期望容量大于当前容量的两倍就会使用期望容量。<br>2、如果当前切片容量小于 1024 就会将容量翻倍。<br>3、如果当前切片容量大于 1024 就会每次增加 25% 的容量，直到新容量大于期望容量。这里是个for循环处理。</li>
+<li>接下来是非常容易被忽略的内容，对类型大小的不同进行特殊处理。<br>这里实际上就是内存对齐的过程。均需要根据slice的类型size，算出新的容量所需的内存情况capmem，然后再进行capmem向上取整，得到新的所需内存，<br>除上类型size，得到真正的最终容量，作为新的slice的容量。</li>
+<li>判断是否会溢出。</li>
+<li>申请新的空间，并将老数据拷贝到新的空间中。</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/14_slice-grow/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/15_http-code/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          HTTP状态码整理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/13_channel/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">理解channel</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">« Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next »</a>
-    </nav>
-  
-
 
 
           </div>
@@ -462,8 +342,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
