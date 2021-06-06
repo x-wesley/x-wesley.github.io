@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="我勒个擦">
 <meta property="og:description" content="我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gopher.vip/image/pool/pool-get.png">
+<meta property="og:image" content="https://gopher.vip/image/7_pool/pool-get.png">
 <meta property="article:published_time" content="2019-09-03T06:56:06.000Z">
-<meta property="article:modified_time" content="2021-06-06T12:43:03.785Z">
+<meta property="article:modified_time" content="2021-06-06T12:53:58.060Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gopher.vip/image/pool/pool-get.png">
+<meta name="twitter:image" content="https://gopher.vip/image/7_pool/pool-get.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -210,7 +210,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func (p *Pool) getSlow(pid int) interface&#123;&#125; &#123;</span><br><span class="line">	size := atomic.LoadUintptr(&amp;p.localSize) // load-acquire</span><br><span class="line">	locals := p.local                        // load-consume</span><br><span class="line">	</span><br><span class="line">	for i := 0; i &lt; int(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i+1)%int(size))</span><br><span class="line">		if x, _ := l.shared.popTail(); x != nil &#123;</span><br><span class="line">			return x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	size = atomic.LoadUintptr(&amp;p.victimSize)</span><br><span class="line">	if uintptr(pid) &gt;= size &#123;</span><br><span class="line">		return nil</span><br><span class="line">	&#125;</span><br><span class="line">	locals = p.victim</span><br><span class="line">	l := indexLocal(locals, pid)</span><br><span class="line">	if x := l.private; x != nil &#123;</span><br><span class="line">		l.private = nil</span><br><span class="line">		return x</span><br><span class="line">	&#125;</span><br><span class="line">	for i := 0; i &lt; int(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i)%int(size))</span><br><span class="line">		if x, _ := l.shared.popTail(); x != nil &#123;</span><br><span class="line">			return x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	atomic.StoreUintptr(&amp;p.victimSize, 0)</span><br><span class="line"></span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>getSlow(）方法会先从其他的P的shared中偷取空间。<br>如果没有偷到，则会在本地的victim中获取。然后再次从其他的P中偷取空间。<br>从源码中可以看出，当pool从本地的shared中取对象时从队列的头部取出，从其他P偷取对象的时候是从尾部取出。</p>
-<p><img src="/image/pool/pool-get.png" alt="Get流程图"><br>流程图如上</p>
+<p><img src="/image/7_pool/pool-get.png" alt="Get流程图"><br>流程图如上</p>
 
       
 
