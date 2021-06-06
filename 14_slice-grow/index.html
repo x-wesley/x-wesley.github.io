@@ -16,7 +16,7 @@
 <meta property="og:description" content="slice是Golang的动态数组，是一个使用频率极高结构，中文叫切片。其底层记录了数组的指针，当前slice的长度及容量。追加、扩容操作是slice的核心。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-05T05:22:21.000Z">
-<meta property="article:modified_time" content="2021-05-25T15:32:10.086Z">
+<meta property="article:modified_time" content="2021-06-06T12:43:03.783Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -166,11 +166,19 @@
 </blockquote>
 <span id="more"></span>
 
+<!-- toc -->
+
+<ul>
+<li><a href="#%E8%BF%BD%E5%8A%A0append">追加(append)</a></li>
+<li><a href="#%E6%89%A9%E5%AE%B9growslice">扩容(growslice)</a></li>
+</ul>
+<!-- tocstop -->
+
 <p>slice的结构就不逼逼了，我们直接从追加开始学习。</p>
-<h3 id="追加-append"><a href="#追加-append" class="headerlink" title="追加(append)"></a>追加(append)</h3><p>Golang的append关键字会在中间代码生成阶段的cmd/compile/internal/gc.ssa.go(func (s *state) append(n *Node, inplace bool) *ssa.Value )实现。</p>
+<h3><span id="追加append">追加(append)</span></h3><p>Golang的append关键字会在中间代码生成阶段的cmd/compile/internal/gc.ssa.go(func (s *state) append(n *Node, inplace bool) *ssa.Value )实现。</p>
 <p>使用 append 可以向 slice 追加元素，实际上是往底层数组添加元素。当追加元素致使其长度达到了容量时会触发扩容操作，其判断方法如下。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ptr, len, cap := s</span><br><span class="line">newlen := len + 3</span><br><span class="line">if uint(newlen) &gt; uint(cap) &#123;</span><br><span class="line">   newptr, len, newcap = growslice(ptr, len, cap, newlen)</span><br><span class="line">   vardef(a)        </span><br><span class="line">   *a.cap = newcap  </span><br><span class="line">   *a.ptr = newptr  </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-<h3 id="扩容-growslice"><a href="#扩容-growslice" class="headerlink" title="扩容(growslice)"></a>扩容(growslice)</h3><p>growslice()在runtime/slice.go中，是slice最重要的方法之一。</p>
+<h3><span id="扩容growslice">扩容(growslice)</span></h3><p>growslice()在runtime/slice.go中，是slice最重要的方法之一。</p>
 <p>growslice在追加(append)期间处理slice的增长。入参为slice元素类型、旧的slice和所需的新最小容量，然后返回至少具有该容量的新slice，并将旧数据复制到其中。</p>
 <p>新的slice长度设置为就得slice长度，而不是请求新的容量。</p>
 <p>上代码</p>

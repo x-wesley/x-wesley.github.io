@@ -169,76 +169,76 @@
     <tr>
          <th>Extra</th>
          <th>描述</th>  
-     </tr >
-     <tr >
+     </tr>
+     <tr>
         <td>No tables used</td>
         <td>查询语句中没有FROM字句的时候会提示，比如 EXPLAIN SELECT 1</td>
     </tr>
-     <tr >
+     <tr>
         <td>Impossible WHERE</td>
         <td>查询字句WHERE的条件永远为FALSE</td>
     </tr>
-      <tr >
+      <tr>
          <td>No matching min/max row</td>
          <td>查询列表出MIN 或 MAX聚集函数但是没有记录符合搜索条件</td>
     </tr>
-       <tr >
+       <tr>
           <td>Using index</td>
           <td>使用覆盖索引/ 全表扫描使用ORDER BY语句</td>
     </tr>
-       <tr >
+       <tr>
           <td>Using index condition</td>
           <td>索索条件虽然出现了索引列，但是不能充当边界条件形成扫描区间。比如使用了LIKE</td>
     </tr>
-       <tr >
+       <tr>
           <td>Using where</td>
           <td>搜索条件需要在server层判断</td>
     </tr>
-       <tr >
+       <tr>
           <td>Using join buffer(Block Nexted Loop)</td>
           <td>连接查询的过程中，当被驱动表不能有效的利用索引加快访问速度时，MySQL会为其分配一块名为连接缓冲区的内存块来加快查询速度</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Using join buffer(Batched Key Access)</td>
         <td>对于多表join语句，当MySQL使用索引访问第二个join表的时候，使用一个join buffer来收集第一个操作对象生成的相关列值</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Using intersect(...)</td>
         <td>准备使用Intersection索引合并的方式执行查询</td>
     </tr>
-    <tr >
+    <tr>
         <td>Using union(...)</td>
         <td>准备使用Union索引合并的方式执行查询</td>
     </tr>    
-    <tr >
+    <tr>
         <td>Using sort_union(...)</td>
         <td>准备使用sort_union索引合并的方式执行查询</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Zero limit</td>
         <td>limit条件为0</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Using filesort</td>
         <td>排序操作无法使用到索引，只能在内存或磁盘中进行排序</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Using temporary</td>
         <td>比如DISTINCT、GROUP BY、UNION等查询过程中，如果不能有效利用索引完成查询，可能会通过建立内部的临时表执行查询</td>
     </tr> 
-    <tr >
+    <tr>
         <td>Start temporary End temporary</td>
         <td>IN子查询转成半连接，执行策略为Duplicate Weedout</td>
     </tr> 
-    <tr >
+    <tr>
         <td>LooseScan</td>
         <td>在将IN子查询转为半连接时，如果采用的是LooseScan执行策略</td>
     </tr> 
-    <tr >
+    <tr>
         <td>FirstMatch(tablename)</td>
         <td>在将IN子查询转为半连接时，如果采用的是FirstMatch执行策略</td>
     </tr> 
-</table> 
+</table>
       
 
       

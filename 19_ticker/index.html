@@ -16,7 +16,7 @@
 <meta property="og:description" content="周期性定时器–Ticker，定时器周期的进行计时，除非注定停止，否则永远运行">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-08-29T16:55:55.000Z">
-<meta property="article:modified_time" content="2021-05-25T15:32:10.083Z">
+<meta property="article:modified_time" content="2021-06-06T12:41:49.355Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -166,27 +166,42 @@
 </blockquote>
 <span id="more"></span>
 
-<h3 id="一、Ticker"><a href="#一、Ticker" class="headerlink" title="一、Ticker"></a>一、Ticker</h3><h3 id="一、结构"><a href="#一、结构" class="headerlink" title="一、结构"></a>一、结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">type Ticker struct &#123;</span><br><span class="line">	C &lt;-chan Time  </span><br><span class="line">	r runtimeTimer</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<!-- toc -->
+
+<ul>
+<li><a href="#%E4%B8%80-ticker">一、Ticker</a></li>
+<li><a href="#%E4%B8%80-%E7%BB%93%E6%9E%84">一、结构</a></li>
+<li><a href="#%E4%BA%8C-%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84">二、代码结构</a></li>
+<li><a href="#%E4%B8%89-%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0">三、底层实现</a><ul>
+<li><a href="#1-newticker">1、NewTicker</a></li>
+<li><a href="#2-stop">2、Stop</a></li>
+<li><a href="#3-tick">3、Tick</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+
+<h3><span id="一-ticker">一、Ticker</span></h3><h3><span id="一-结构">一、结构</span></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">type Ticker struct &#123;</span><br><span class="line">	C &lt;-chan Time  </span><br><span class="line">	r runtimeTimer</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>此处和Timer的结构一毛一样。</p>
 <ul>
 <li>C 管道类型的变量，上层调用者通过此管道接收事件。</li>
 <li>r runtime定时器，该定时器即系统管理的定时器，上层不可见。</li>
 </ul>
 <p>当定时器过期，当前时间会被发送到C上。除非定时器是通过AfterFunc创建。</p>
-<h3 id="二、代码结构"><a href="#二、代码结构" class="headerlink" title="二、代码结构"></a>二、代码结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">func NewTicker(d Duration) *Ticker</span><br><span class="line"></span><br><span class="line">func (t *Ticker) Stop() </span><br><span class="line"></span><br><span class="line">func Tick(d Duration) &lt;-chan Time</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3><span id="二-代码结构">二、代码结构</span></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">func NewTicker(d Duration) *Ticker</span><br><span class="line"></span><br><span class="line">func (t *Ticker) Stop() </span><br><span class="line"></span><br><span class="line">func Tick(d Duration) &lt;-chan Time</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>NewTicker 创建方法，返回一个周期为d的定时器。</li>
 <li>Stop 停止当前Ticker。并不会向定时器的管道中写入事件，管道也不会被关闭。管道在生命周期结束后会自动关闭。</li>
 <li>Tick 返回一个通道，但是底层还是会创建一个Ticker。</li>
 </ul>
-<h3 id="三、底层实现"><a href="#三、底层实现" class="headerlink" title="三、底层实现"></a>三、底层实现</h3><h4 id="1、NewTicker"><a href="#1、NewTicker" class="headerlink" title="1、NewTicker"></a>1、NewTicker</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func NewTicker(d Duration) *Ticker &#123;</span><br><span class="line">	if d &lt;= 0 &#123;</span><br><span class="line">		panic(errors.New(&quot;non-positive interval for NewTicker&quot;))</span><br><span class="line">	&#125;</span><br><span class="line">	c := make(chan Time, 1)</span><br><span class="line">	t := &amp;Ticker&#123;</span><br><span class="line">		C: c,</span><br><span class="line">		r: runtimeTimer&#123;</span><br><span class="line">			when:   when(d),</span><br><span class="line">			period: int64(d),</span><br><span class="line">			f:      sendTime,</span><br><span class="line">			arg:    c,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	startTimer(&amp;t.r)</span><br><span class="line">	return t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3><span id="三-底层实现">三、底层实现</span></h3><h4><span id="1-newticker">1、NewTicker</span></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func NewTicker(d Duration) *Ticker &#123;</span><br><span class="line">	if d &lt;= 0 &#123;</span><br><span class="line">		panic(errors.New(&quot;non-positive interval for NewTicker&quot;))</span><br><span class="line">	&#125;</span><br><span class="line">	c := make(chan Time, 1)</span><br><span class="line">	t := &amp;Ticker&#123;</span><br><span class="line">		C: c,</span><br><span class="line">		r: runtimeTimer&#123;</span><br><span class="line">			when:   when(d),</span><br><span class="line">			period: int64(d),</span><br><span class="line">			f:      sendTime,</span><br><span class="line">			arg:    c,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	startTimer(&amp;t.r)</span><br><span class="line">	return t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>方法中初始化一些必要的变量信息，然后通过startTimer()交给系统协程维护。<br>when()是计算下一次定时器触发的绝对时间。<br>startTimer()是定时器触发时的动作。<br>这也和Timer区别不大，只是增加了period字段保证周期性执行</p>
-<h4 id="2、Stop"><a href="#2、Stop" class="headerlink" title="2、Stop"></a>2、Stop</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func (t *Ticker) Stop() &#123;</span><br><span class="line">	stopTimer(&amp;t.r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4><span id="2-stop">2、Stop</span></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func (t *Ticker) Stop() &#123;</span><br><span class="line">	stopTimer(&amp;t.r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>此处致使简单的把Timer从系统协程中移除。但是并不会关闭通道。</p>
 <p>和Timer区别不大，但是并没有返回值。</p>
-<h4 id="3、Tick"><a href="#3、Tick" class="headerlink" title="3、Tick"></a>3、Tick</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func Tick(d Duration) &lt;-chan Time &#123;</span><br><span class="line">	if d &lt;= 0 &#123;</span><br><span class="line">		return nil</span><br><span class="line">	&#125;</span><br><span class="line">	return NewTicker(d).C</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4><span id="3-tick">3、Tick</span></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func Tick(d Duration) &lt;-chan Time &#123;</span><br><span class="line">	if d &lt;= 0 &#123;</span><br><span class="line">		return nil</span><br><span class="line">	&#125;</span><br><span class="line">	return NewTicker(d).C</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>我特么没啥想说的……</p>
 
       
