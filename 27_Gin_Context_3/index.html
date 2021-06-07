@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>Gin框架学习（三）-- Context | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/index.html">
+  <meta name="description" content="母亲节快乐~ 祝天下的母亲都快快乐乐Context是框架中非常重要的一点，它允许我们在中间件间共享变量，管理整个流程。携带了HTTP请求的request、response。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gin框架学习（三）-- Context">
+<meta property="og:url" content="https://gopher.vip/27_Gin_Context_3/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="母亲节快乐~ 祝天下的母亲都快快乐乐Context是框架中非常重要的一点，它允许我们在中间件间共享变量，管理整个流程。携带了HTTP请求的request、response。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-09T15:38:00.000Z">
+<meta property="article:modified_time" content="2021-06-07T16:03:23.130Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -139,307 +141,237 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-27_Gin_Context_3" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Gin框架学习（三）-- Context
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/27_Gin_Context_3/" class="archive-article-date">
+
+        
+        <a href="/27_Gin_Context_3/" class="archive-article-date">
   	<time datetime="2021-05-09T15:38:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-09</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/27_Gin_Context_3/">Gin框架学习（三）-- Context</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
+        
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/26_Gin_Engine_2/" class="archive-article-date">
-  	<time datetime="2021-04-04T14:47:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/26_Gin_Engine_2/">Gin框架学习（二）-- Engine</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/25_GIN_INTRODUCE_1/" class="archive-article-date">
-  	<time datetime="2021-03-20T01:30:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/25_GIN_INTRODUCE_1/">Gin框架学习（一）-- 介绍</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/24_The_Go_Memory_Model/" class="archive-article-date">
-  	<time datetime="2021-02-12T15:50:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-02-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/24_The_Go_Memory_Model/">Golang内存模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/23_GOLANG_Memory_Allocation/" class="archive-article-date">
-  	<time datetime="2021-01-02T02:34:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/23_GOLANG_Memory_Allocation/">Golang内存分配</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
+    <div class="article-entry" itemprop="articleBody">
       
-        </div></section>
+        <blockquote>
+<p>母亲节快乐~ 祝天下的母亲都快快乐乐<br>Context是框架中非常重要的一点，它允许我们在中间件间共享变量，管理整个流程。携带了HTTP请求的request、response。</p>
+</blockquote>
+<span id="more"></span>
+
+<!-- toc -->
+
+<ul>
+<li><a href="#%E4%B8%80-%E7%BB%93%E6%9E%84">一、结构</a></li>
+<li><a href="#%E4%BA%8C-%E4%B8%BB%E8%A6%81%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D">二、主要方法介绍</a><ul>
+<li><a href="#func-c-context-reset">func (c *Context) reset()</a></li>
+<li><a href="#func-c-context-copy-context">func (c *Context) Copy() *Context</a></li>
+<li><a href="#func-c-context-next">func (c *Context) Next()</a></li>
+<li><a href="#func-c-context-errorerr-error-error">func (c *Context) Error(err error) *Error</a></li>
+<li><a href="#func-c-context-setkey-string-value-interface">func (c *Context) Set(key string, value interface{})</a></li>
+<li><a href="#func-c-context-getkey-string-value-interface-exists-bool">func (c *Context) Get(key string) (value interface{}, exists bool)</a></li>
+<li><a href="#func-c-context-paramkey-string-string">func (c *Context) Param(key string) string</a></li>
+<li><a href="#func-c-context-querykey-string-string">func (c *Context) Query(key string) string</a></li>
+<li><a href="#func-c-context-postformkey-string-string">func (c *Context) PostForm(key string) string</a></li>
+<li><a href="#func-c-context-bindobj-interface-error">func (c *Context) Bind(obj interface{}) error</a></li>
+<li><a href="#func-c-context-clientip-string">func (c *Context) ClientIP() string</a></li>
+<li><a href="#func-c-context-remoteip-netip-bool">func (c *Context) RemoteIP() (net.IP, bool)</a></li>
+<li><a href="#func-c-context-rendercode-int-r-renderrender">func (c *Context) Render(code int, r render.Render)</a></li>
+<li><a href="#func-c-context-deadline-deadline-timetime-ok-bool">func (c *Context) Deadline() (deadline time.Time, ok bool)</a></li>
+<li><a href="#func-c-context-done-chan-struct">func (c *Context) Done() &lt;-chan struct{}</a></li>
+<li><a href="#func-c-context-err-error">func (c *Context) Err() error</a></li>
+<li><a href="#func-c-context-valuekey-interface-interface">func (c *Context) Value(key interface{}) interface{}</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+
+<h2><span id="一-结构">一、结构</span></h2><p>   代码位置：<a target="_blank" rel="noopener" href="https://github.com/gin-gonic/gin/blob/master/context.go">https://github.com/gin-gonic/gin/blob/master/gin.go</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Context <span class="keyword">struct</span> &#123;</span><br><span class="line">	writermem     responseWriter</span><br><span class="line">	Request       *http.Request</span><br><span class="line">	Writer        ResponseWriter</span><br><span class="line">	Params        Params</span><br><span class="line">	handlers      HandlersChain</span><br><span class="line">	index         <span class="keyword">int8</span></span><br><span class="line">	fullPath      <span class="keyword">string</span></span><br><span class="line">	engine        *Engine</span><br><span class="line">	params        *Params</span><br><span class="line">	mu            sync.RWMutex</span><br><span class="line">	Keys          <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	Errors        errorMsgs</span><br><span class="line">	Accepted      []<span class="keyword">string</span></span><br><span class="line">	queryCache    url.Values</span><br><span class="line">	formCache     url.Values</span><br><span class="line">	sameSite      http.SameSite</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>writermem</strong>： 包含size,status和net/http.ResponseWriter的结构体</li>
+<li><strong>Request</strong>：   http的请求体(指向原生的http.Request指针)  </li>
+<li><strong>Writer</strong>：    ResponseWriter,<font color="red">这里没搞明白为什么要同时搞两个writermem和Writer</font></li>
+<li><strong>Params</strong>：    请求参数[]{“Key”:”Value”}，这里同params。参数通过path传入的时候解析对应的参数。/a/b/c/:id</li>
+<li><strong>handlers</strong>：  当前path匹配到的所有handler集合</li>
+<li><strong>index</strong>：     当前执行到的handler在切片中的索引位置</li>
+<li><strong>fullPath</strong>：  当前HTTP请求的路径</li>
+<li><strong>engine</strong>：    当前Engine</li>
+<li><strong>params</strong>：    同Params</li>
+<li><strong>mu</strong>：        在下面Keys中存取键值对时的互斥锁</li>
+<li><strong>Keys</strong>：      每个请求的context中的唯一键值对，这里猜测是可以让用户放入一些自定义参数通过上下文传输 </li>
+<li><strong>Errors</strong>：    绑定到所有使用该context的handler/middlewares的错误列表 </li>
+<li><strong>Accepted</strong>：  定义了允许的格式被用于内容协商(content)，请求头的Accept字段 </li>
+<li><strong>queryCache</strong>：queryCache 使用url.ParseQuery来缓存参数查询结果(c.Request.URL.Query()) /a/b/c?s=1&amp;b=2</li>
+<li><strong>formCache</strong>： formCache 使用url.ParseQuery来缓存PostForm包含的表单数据(来自POST,PATCH,PUT请求体参数) </li>
+<li><strong>sameSite</strong>：  sameSite允许服务器定义cookie属性，使浏览器不可能在跨站点请求时发送此cookie。 </li>
+</ul>
+<h2><span id="二-主要方法介绍">二、主要方法介绍</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">reset</span><span class="params">()</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Copy</span><span class="params">()</span> *<span class="title">Context</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Next</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Error</span><span class="params">(err error)</span> *<span class="title">Error</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">string</span>, value <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="params">(value <span class="keyword">interface</span>&#123;&#125;, exists <span class="keyword">bool</span>)</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Param</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Query</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">PostForm</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Bind</span><span class="params">(obj <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">ClientIP</span><span class="params">()</span> <span class="title">string</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">RemoteIP</span><span class="params">()</span> <span class="params">(net.IP, <span class="keyword">bool</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Render</span><span class="params">(code <span class="keyword">int</span>, r render.Render)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Deadline</span><span class="params">()</span> <span class="params">(deadline time.Time, ok <span class="keyword">bool</span>)</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Done</span><span class="params">()</span> &lt;-<span class="title">chan</span> <span class="title">struct</span></span>&#123;&#125; </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Err</span><span class="params">()</span> <span class="title">error</span></span> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Value</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">interface</span></span>&#123;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3><span id="func-c-context-reset">func (c *Context) reset()</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">reset</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c.Writer = &amp;c.writermem</span><br><span class="line">	c.Params = c.Params[:<span class="number">0</span>]</span><br><span class="line">	c.handlers = <span class="literal">nil</span></span><br><span class="line">	c.index = <span class="number">-1</span></span><br><span class="line"></span><br><span class="line">	c.fullPath = <span class="string">&quot;&quot;</span></span><br><span class="line">	c.Keys = <span class="literal">nil</span></span><br><span class="line">	c.Errors = c.Errors[:<span class="number">0</span>]</span><br><span class="line">	c.Accepted = <span class="literal">nil</span></span><br><span class="line">	c.queryCache = <span class="literal">nil</span></span><br><span class="line">	c.formCache = <span class="literal">nil</span></span><br><span class="line">	*c.params = (*c.params)[:<span class="number">0</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>reset()方法主要功能就是初始化一个Context对象，在engine.pool中获取一个Context对象后，对这个Context对象进行一些初始化动作。避免一些脏数据造成的影响。（原因参见<a href="/7_pool/">sync.Pool</a>)的介绍）  </p>
+<h3><span id="func-c-context-copy-context">func (c *Context) Copy() *Context</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Copy</span><span class="params">()</span> *<span class="title">Context</span></span> &#123;</span><br><span class="line">	cp := Context&#123;</span><br><span class="line">		writermem: c.writermem,</span><br><span class="line">		Request:   c.Request,</span><br><span class="line">		Params:    c.Params,</span><br><span class="line">		engine:    c.engine,</span><br><span class="line">	&#125;</span><br><span class="line">	cp.writermem.ResponseWriter = <span class="literal">nil</span></span><br><span class="line">	cp.Writer = &amp;cp.writermem</span><br><span class="line">	cp.index = abortIndex</span><br><span class="line">	cp.handlers = <span class="literal">nil</span></span><br><span class="line">	cp.Keys = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> k, v := <span class="keyword">range</span> c.Keys &#123;</span><br><span class="line">		cp.Keys[k] = v</span><br><span class="line">	&#125;</span><br><span class="line">	paramCopy := <span class="built_in">make</span>([]Param, <span class="built_in">len</span>(cp.Params))</span><br><span class="line">	<span class="built_in">copy</span>(paramCopy, cp.Params)</span><br><span class="line">	cp.Params = paramCopy</span><br><span class="line">	<span class="keyword">return</span> &amp;cp</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Copy返回当前上下文的一个副本，可以在请求范围之外安全地使用。当需要将上下文传递给goroutine时，必须使用此方法。</p>
+<h3><span id="func-c-context-next">func (c *Context) Next()</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Next</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	<span class="keyword">for</span> c.index &lt; <span class="keyword">int8</span>(<span class="built_in">len</span>(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>依次运行handler链中的下个个handler</p>
+<h3><span id="func-c-context-errorerr-error-error">func (c *Context) Error(err error) *Error</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Error</span><span class="params">(err error)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">&quot;err is nil&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	parsedError, ok := err.(*Error)</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		parsedError = &amp;Error&#123;</span><br><span class="line">			Err:  err,</span><br><span class="line">			Type: ErrorTypePrivate,</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c.Errors = <span class="built_in">append</span>(c.Errors, parsedError)</span><br><span class="line">	<span class="keyword">return</span> parsedError</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回一些错误对象。Error将错误附加到当前上下文。将错误推入错误列表。对于在解析请求期间发生的每个错误，最好都调用Error。中间件可用于收集所有错误并将它们一起推送到数据库、打印日志或将其附加到HTTP响应中。如果err为nil，错误就会恐慌。</p>
+<h3><span id="func-c-context-setkey-string-value-interface">func (c *Context) Set(key string, value interface{})</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">string</span>, value <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	c.mu.Lock()</span><br><span class="line">	<span class="keyword">if</span> c.Keys == <span class="literal">nil</span> &#123;</span><br><span class="line">		c.Keys = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c.Keys[key] = value</span><br><span class="line">	c.mu.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>向Keys添加键值对</p>
+<h3><span id="func-c-context-getkey-string-value-interface-exists-bool">func (c *Context) Get(key string) (value interface{}, exists bool)</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="params">(value <span class="keyword">interface</span>&#123;&#125;, exists <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	c.mu.RLock()</span><br><span class="line">	value, exists = c.Keys[key]</span><br><span class="line">	c.mu.RUnlock()</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从Keys中查找key对应的值 </p>
+<h3><span id="func-c-context-paramkey-string-string">func (c *Context) Param(key string) string</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Param</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> c.Params.ByName(key)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回url路径中的参数值（/user/:id， c.Param(“id”)返回id对应的值）</p>
+<h3><span id="func-c-context-querykey-string-string">func (c *Context) Query(key string) string</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Query</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	value, _ := c.GetQuery(key)</span><br><span class="line">	<span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回url路径中的参数值（GET /path?id=1234&amp;name=Manu&amp;value=， c.Param(“id”)返回id对应的值）</p>
+<h3><span id="func-c-context-postformkey-string-string">func (c *Context) PostForm(key string) string</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">PostForm</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	value, _ := c.GetPostForm(key)</span><br><span class="line">	<span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从POST url编码表单或多部分表单中返回指定的键，否则返回空字符串’(“”)’。</p>
+<h3><span id="func-c-context-bindobj-interface-error">func (c *Context) Bind(obj interface{}) error</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Bind</span><span class="params">(obj <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	b := binding.Default(c.Request.Method, c.ContentType())</span><br><span class="line">	<span class="keyword">return</span> c.MustBindWith(obj, b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Bind检查Content-Type以自动选择绑定引擎，<br>根据“Content-Type”头使用不同的绑定:<br>“application/json” ——&gt; json绑定<br>“application/xm”   ——&gt; xml绑定<br>否则——&gt;返回错误。<br>如果Content-Type == “application/ JSON “使用JSON或XML作为JSON输入，它将请求的主体解析为JSON。<br>它将json有效负载解码为指定为指针的结构。<br>如果输入无效，它会写一个400错误，并在响应中设置Content-Type头“text/plain”。</p>
+<h3><span id="func-c-context-clientip-string">func (c *Context) ClientIP() string</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">ClientIP</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> c.engine.AppEngine:</span><br><span class="line">		<span class="keyword">if</span> addr := c.requestHeader(<span class="string">&quot;X-Appengine-Remote-Addr&quot;</span>); addr != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> addr</span><br><span class="line">		&#125;</span><br><span class="line">	<span class="keyword">case</span> c.engine.CloudflareProxy:</span><br><span class="line">		<span class="keyword">if</span> addr := c.requestHeader(<span class="string">&quot;CF-Connecting-IP&quot;</span>); addr != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> addr</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	remoteIP, trusted := c.RemoteIP()</span><br><span class="line">	<span class="keyword">if</span> remoteIP == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> trusted &amp;&amp; c.engine.ForwardedByClientIP &amp;&amp; c.engine.RemoteIPHeaders != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> _, headerName := <span class="keyword">range</span> c.engine.RemoteIPHeaders &#123;</span><br><span class="line">			ip, valid := validateHeader(c.requestHeader(headerName))</span><br><span class="line">			<span class="keyword">if</span> valid &#123;</span><br><span class="line">				<span class="keyword">return</span> ip</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> remoteIP.String()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ClientIP实现了一个最佳努力算法来返回真实的客户端IP。<br>它在底层调用c.RemoteIP()，以检查远程IP是否为可信代理。<br>如果是，它将尝试解析在Engine中定义的头文件。RemoteIPHeaders(默认为[X-Forwarded-For, X-Real-Ip])。<br>如果Header在语法上无效或远端IP与可信代理不对应，返回远端IP(来自Request.RemoteAddr)。</p>
+<h3><span id="func-c-context-remoteip-netip-bool">func (c *Context) RemoteIP() (net.IP, bool)</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">RemoteIP</span><span class="params">()</span> <span class="params">(net.IP, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	ip, _, err := net.SplitHostPort(strings.TrimSpace(c.Request.RemoteAddr))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	remoteIP := net.ParseIP(ip)</span><br><span class="line">	<span class="keyword">if</span> remoteIP == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> c.engine.trustedCIDRs != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> _, cidr := <span class="keyword">range</span> c.engine.trustedCIDRs &#123;</span><br><span class="line">			<span class="keyword">if</span> cidr.Contains(remoteIP) &#123;</span><br><span class="line">				<span class="keyword">return</span> remoteIP, <span class="literal">true</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> remoteIP, <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RemoteIP从请求解析IP。正常化并返回IP(不带端口)。<br>它还检查remoteIP是否为可信代理。<br>为了执行这个验证，它将查看IP是否包含在Engine.TrustedProxies中定义的至少一个CIDR块中。</p>
+<h3><span id="func-c-context-rendercode-int-r-renderrender">func (c *Context) Render(code int, r render.Render)</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Render</span><span class="params">(code <span class="keyword">int</span>, r render.Render)</span></span> &#123;</span><br><span class="line">	c.Status(code)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !bodyAllowedForStatus(code) &#123;</span><br><span class="line">		r.WriteContentType(c.Writer)</span><br><span class="line">		c.Writer.WriteHeaderNow()</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := r.Render(c.Writer); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Render写入响应头并调用Render，渲染到渲染数据。根据不同的binding类型采用不同的渲染逻辑。</p>
+<hr>
+<p>gin.Context还实现了context/Context接口（参见<a href="/2_context/">Context</a>的介绍），但是并没有实现具体逻辑。</p>
+<h3><span id="func-c-context-deadline-deadline-timetime-ok-bool">func (c *Context) Deadline() (deadline time.Time, ok bool)</span></h3><h3><span id="func-c-context-done-lt-chan-struct">func (c *Context) Done() &lt;-chan struct{}</span></h3><h3><span id="func-c-context-err-error">func (c *Context) Err() error</span></h3><h3><span id="func-c-context-valuekey-interface-interface">func (c *Context) Value(key interface{}) interface{}</span></h3>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/22_Mysql_Optimizer/" class="archive-article-date">
-  	<time datetime="2020-12-31T15:55:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/22_Mysql_Optimizer/">Mysql优化器索引选择</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/27_Gin_Context_3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/21_Mysql_EXPLAIN/" class="archive-article-date">
-  	<time datetime="2020-11-11T15:11:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-11</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/26_Gin_Engine_2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Gin框架学习（二）-- Engine</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/21_Mysql_EXPLAIN/">Mysql EXPLAIN命令字段整理</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/20_Mysql_Extra/" class="archive-article-date">
-  	<time datetime="2020-10-02T02:32:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/20_Mysql_Extra/">Mysql EXPLAIN命令中的Extra字段整理</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/19_ticker/" class="archive-article-date">
-  	<time datetime="2020-08-29T16:55:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-08-30</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/19_ticker/">Ticker</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/18_timer/" class="archive-article-date">
-  	<time datetime="2020-08-29T15:34:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-08-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/18_timer/">Timer</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/2/">Next »</a>
-    </nav>
-  
-
 
 
           </div>
@@ -462,8 +394,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
