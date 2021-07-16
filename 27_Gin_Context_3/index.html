@@ -16,7 +16,7 @@
 <meta property="og:description" content="母亲节快乐~ 祝天下的母亲都快快乐乐Context是框架中非常重要的一点，它允许我们在中间件间共享变量，管理整个流程。携带了HTTP请求的request、response。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-09T15:38:00.000Z">
-<meta property="article:modified_time" content="2021-06-07T16:03:23.130Z">
+<meta property="article:modified_time" content="2021-06-09T14:52:50.134Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -194,6 +194,9 @@
 <!-- tocstop -->
 
 <h2><span id="一-结构">一、结构</span></h2><p>   代码位置：<a target="_blank" rel="noopener" href="https://github.com/gin-gonic/gin/blob/master/context.go">https://github.com/gin-gonic/gin/blob/master/gin.go</a>。</p>
+<p>   Context的主要功能是处理HTTP请求中的Request、Response，处理具体的HTTP数据传输方式，比如HTTP头部，请求体参数，状态码以及响应体和其他的一些常见HTTP行为。</p>
+<p>   Context虽然在Gin中的地位极其显耀，但是内部逻辑相对简单。主要分为构造方法、流程控制、错误管理、元数据管理、Request数据管理、Response渲染、内容协商、官方Context实现这几大类。</p>
+<p>Context结构：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Context <span class="keyword">struct</span> &#123;</span><br><span class="line">	writermem     responseWriter</span><br><span class="line">	Request       *http.Request</span><br><span class="line">	Writer        ResponseWriter</span><br><span class="line">	Params        Params</span><br><span class="line">	handlers      HandlersChain</span><br><span class="line">	index         <span class="keyword">int8</span></span><br><span class="line">	fullPath      <span class="keyword">string</span></span><br><span class="line">	engine        *Engine</span><br><span class="line">	params        *Params</span><br><span class="line">	mu            sync.RWMutex</span><br><span class="line">	Keys          <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	Errors        errorMsgs</span><br><span class="line">	Accepted      []<span class="keyword">string</span></span><br><span class="line">	queryCache    url.Values</span><br><span class="line">	formCache     url.Values</span><br><span class="line">	sameSite      http.SameSite</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
