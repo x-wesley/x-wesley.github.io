@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>Go如何计算len()..? | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/index.html">
+  <meta name="description" content="本文翻译自《How does Go calculate len()..?》">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go如何计算len()..?">
+<meta property="og:url" content="https://gopher.vip/29_Golang_Len/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="本文翻译自《How does Go calculate len()..?》">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-31T15:55:00.000Z">
+<meta property="article:modified_time" content="2021-08-07T12:45:48.857Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -139,307 +141,240 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-29_Golang_Len" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Go如何计算len()..?
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/29_Golang_Len/" class="archive-article-date">
+
+        
+        <a href="/29_Golang_Len/" class="archive-article-date">
   	<time datetime="2021-07-31T15:55:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-31</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/29_Golang_Len/">Go如何计算len()..?</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
+        
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/28_Gin_Trees_4/" class="archive-article-date">
-  	<time datetime="2021-06-14T16:18:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/28_Gin_Trees_4/">Gin框架学习（四）--Trees</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/27_Gin_Context_3/" class="archive-article-date">
-  	<time datetime="2021-05-09T15:38:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/27_Gin_Context_3/">Gin框架学习（三）-- Context</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/26_Gin_Engine_2/" class="archive-article-date">
-  	<time datetime="2021-04-04T14:47:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/26_Gin_Engine_2/">Gin框架学习（二）-- Engine</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/25_GIN_INTRODUCE_1/" class="archive-article-date">
-  	<time datetime="2021-03-20T01:30:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/25_GIN_INTRODUCE_1/">Gin框架学习（一）-- 介绍</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/24_The_Go_Memory_Model/" class="archive-article-date">
-  	<time datetime="2021-02-12T15:50:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-02-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/24_The_Go_Memory_Model/">Golang内存模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/23_GOLANG_Memory_Allocation/" class="archive-article-date">
-  	<time datetime="2021-01-02T02:34:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/23_GOLANG_Memory_Allocation/">Golang内存分配</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
+    <div class="article-entry" itemprop="articleBody">
       
-        </div></section>
+        <blockquote>
+<p>本文翻译自<a target="_blank" rel="noopener" href="https://tpaschalis.github.io/golang-len/">《How does Go calculate len()..?》</a></p>
+</blockquote>
+<span id="more"></span>
+
+<!-- toc -->
+
+<ul>
+<li><a href="#%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%8F%92%E6%9B%B2">一个小插曲</a></li>
+<li><a href="#%E8%BF%9B%E5%85%A5%E7%82%B9">进入点</a></li>
+<li><a href="#%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84-%E5%89%8D%E5%8F%B0">编译器的 “前台”</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84">数组</a></li>
+<li><a href="#slices-strings">Slices, Strings</a></li>
+<li><a href="#maps-channels">Maps, Channels</a></li>
+<li><a href="#%E4%B8%B4%E5%88%AB%E8%B5%A0%E8%A8%80">临别赠言</a></li>
+</ul>
+<!-- tocstop -->
+
+<p>写这篇文章的动力是一个关于gopher Slack的问题。一位开发人员想知道在哪里可以找到更多关于len的信息。</p>
+<blockquote>
+<p>我想知道len func是如何调用的。</p>
+</blockquote>
+<p>人们很快就回答了一个正确的答案.</p>
+<blockquote>
+<p>len是一个编译器魔法，并不是一个实际的函数调用。</p>
+</blockquote>
+<blockquote>
+<p>……所有len工作的类型都有相同的头格式，编译器只是把对象当作一个头，并返回代表元素长度的整数。</p>
+</blockquote>
+<p>虽然这些答案在技术上是正确的，但我认为用一个简明的解释来展开构成这个 “魔法 “的层次是很好的 这也是一个很好的小练习，可以让我们更深入地了解Go编译器的内部运作。</p>
+<p>顺便说一下，这篇文章中的所有链接都指向即将发布的<a target="_blank" rel="noopener" href="https://github.com/golang/go/tree/release-branch.go1.17">Go 1.17分支</a>。</p>
+<h1><span id="一个小插曲">一个小插曲</span></h1><p>一些背景信息可能有助于理解本帖的其余部分。</p>
+<p>Go编译器由四个主要阶段组成。你可以从这里开始阅读它们。前两个阶段一般被称为编译器的 “前端”，而后两个阶段也被称为编译器的 “后端”。</p>
+<ul>
+<li>解析；对源文件进行标记、解析，并为每个源文件构建一个语法树。</li>
+<li>AST转换和类型检查；语法树被转换为编译器的AST表示，AST树被进行类型检查。</li>
+<li>通用SSA；AST树被转换为静态单一赋值（SSA）形式，这是一种较低级别的中间表示，可以实现优化。</li>
+<li>生成机器码；SSA经过另一个针对机器的优化过程，之后被传递给汇编器，翻译成机器码并写入最终的二进制文件。</li>
+</ul>
+<p>让我们重新开始吧!</p>
+<h1><span id="进入点">进入点</span></h1><p>Go 编译器的入口是（不出所料）compile/internal/gc 包中的 main() 函数。</p>
+<p>正如文档串所提示的，这个函数负责解析 Go 源文件、对解析后的 Go 包进行类型检查、将所有内容编译为机器码并编写编译后的包定义。</p>
+<p>早期发生的事情之一是tynecheck.InitUniverse()，它定义了基本类型、内置函数和操作数。</p>
+<p>在那里，我们看到所有内置函数是如何与 “操作 “相匹配的，我们可以使用ir.OLEN来追踪调用len的步骤。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> builtinFuncs = [...]<span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	op   ir.Op</span><br><span class="line">&#125;&#123;</span><br><span class="line">	&#123;<span class="string">&quot;append&quot;</span>, ir.OAPPEND&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;cap&quot;</span>, ir.OCAP&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;close&quot;</span>, ir.OCLOSE&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;complex&quot;</span>, ir.OCOMPLEX&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;copy&quot;</span>, ir.OCOPY&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;delete&quot;</span>, ir.ODELETE&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;imag&quot;</span>, ir.OIMAG&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;len&quot;</span>, ir.OLEN&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;make&quot;</span>, ir.OMAKE&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;new&quot;</span>, ir.ONEW&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;panic&quot;</span>, ir.OPANIC&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;print&quot;</span>, ir.OPRINT&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;println&quot;</span>, ir.OPRINTN&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;real&quot;</span>, ir.OREAL&#125;,</span><br><span class="line">	&#123;<span class="string">&quot;recover&quot;</span>, ir.ORECOVER&#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在InitUniverse的后面，我们可以看到okfor数组的初始化，它定义了各种操作数的有效类型；例如，哪些类型应该被允许用于+操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> types.IsInt[et] || et == types.TIDEAL &#123;</span><br><span class="line">	...</span><br><span class="line">	okforadd[et] = <span class="literal">true</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> types.IsFloat[et] &#123;</span><br><span class="line">	...</span><br><span class="line">	okforadd[et] = <span class="literal">true</span></span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line"><span class="keyword">if</span> types.IsComplex[et] &#123;</span><br><span class="line">	...</span><br><span class="line">	okforadd[et] = <span class="literal">true</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以同样的方式，我们可以看到所有的类型将成为len()的有效输入。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">okforlen[types.TARRAY] = <span class="literal">true</span></span><br><span class="line">okforlen[types.TCHAN] = <span class="literal">true</span></span><br><span class="line">okforlen[types.TMAP] = <span class="literal">true</span></span><br><span class="line">okforlen[types.TSLICE] = <span class="literal">true</span></span><br><span class="line">okforlen[types.TSTRING] = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h1><span id="编译器的-前台">编译器的 “前台”</span></h1><p>进入到编译过程的下一个主要步骤，我们到达了从<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/release-branch.go1.17/src/cmd/compile/internal/gc/main.go#L191-L192">noder.LoadPackage(flag.Args())</a>开始对输入进行解析和类型检查的地方。</p>
+<p>再深入几层，我们可以看到每个文件都被单独<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/release-branch.go1.17/src/cmd/compile/internal/noder/noder.go#L40-L64">解析</a>，然后在五个不同的阶段进行类型检查。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Phase <span class="number">1</span>: <span class="keyword">const</span>, <span class="keyword">type</span>, and names and types of funcs.</span><br><span class="line">Phase <span class="number">2</span>: Variable assignments, <span class="keyword">interface</span> assignments, alias declarations.</span><br><span class="line">Phase <span class="number">3</span>: Type check function bodies.</span><br><span class="line">Phase <span class="number">4</span>: Check external declarations.</span><br><span class="line">Phase <span class="number">5</span>: Verify <span class="keyword">map</span> keys, unused dot imports.</span><br></pre></td></tr></table></figure>
+
+<p>一旦在最后的类型检查阶段遇到len语句，它就会被转换为UnaryExpr，因为它实际上最终不会成为一个函数调用。</p>
+<p>编译器隐含地获取参数的地址，并使用okforlen数组来验证参数的合法性或发出相关的错误信息。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// typecheck1 should ONLY be called from typecheck.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">typecheck1</span><span class="params">(n ir.Node, top <span class="keyword">int</span>)</span> <span class="title">ir</span>.<span class="title">Node</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> n, ok := n.(*ir.Name); ok &#123;</span><br><span class="line">		typecheckdef(n)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> n.Op() &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">case</span> ir.OCAP, ir.OLEN:</span><br><span class="line">		n := n.(*ir.UnaryExpr)</span><br><span class="line">		<span class="keyword">return</span> tcLenCap(n)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// tcLenCap typechecks an OLEN or OCAP node.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tcLenCap</span><span class="params">(n *ir.UnaryExpr)</span> <span class="title">ir</span>.<span class="title">Node</span></span> &#123;</span><br><span class="line">	n.X = Expr(n.X)</span><br><span class="line">	n.X = DefaultLit(n.X, <span class="literal">nil</span>)</span><br><span class="line">	n.X = implicitstar(n.X)</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">var</span> ok <span class="keyword">bool</span></span><br><span class="line">	<span class="keyword">if</span> n.Op() == ir.OLEN &#123;</span><br><span class="line">		ok = okforlen[t.Kind()]</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		ok = okforcap[t.Kind()]</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		base.Errorf(<span class="string">&quot;invalid argument %L for %v&quot;</span>, l, n.Op())</span><br><span class="line">		n.SetType(<span class="literal">nil</span>)</span><br><span class="line">		<span class="keyword">return</span> n</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	n.SetType(types.Types[types.TINT])</span><br><span class="line">	<span class="keyword">return</span> n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>回到编译器的主流程，在所有东西都经过类型检查后，所有的函数都<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/release-branch.go1.17/src/cmd/compile/internal/gc/main.go#L277-L287">被排队等待编译</a>。</p>
+<p>在compileFunctions()中，队列中的每个元素都会通过ssagen.Compile。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">compile = <span class="function"><span class="keyword">func</span><span class="params">(fns []*ir.Func)</span></span> &#123;</span><br><span class="line">	wg.Add(<span class="built_in">len</span>(fns))</span><br><span class="line">	<span class="keyword">for</span> _, fn := <span class="keyword">range</span> fns &#123;</span><br><span class="line">		fn := fn</span><br><span class="line">		queue(<span class="function"><span class="keyword">func</span><span class="params">(worker <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">			ssagen.Compile(fn, worker)</span><br><span class="line">			compile(fn.Closures)</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">compile(compilequeue)</span><br></pre></td></tr></table></figure>
+
+<p>在buildssa和genssa之后，再深入几层，我们终于可以把AST树中的len表达式转换为SSA。</p>
+<p>在这一点上，我们很容易看到每一个可用的类型是如何处理的!</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// expr converts the expression n to ssa, adds it to s and returns the ssa result.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *state)</span> <span class="title">expr</span><span class="params">(n ir.Node)</span> *<span class="title">ssa</span>.<span class="title">Value</span></span> &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">switch</span> n.Op() &#123;</span><br><span class="line">	<span class="keyword">case</span> ir.OLEN, ir.OCAP:</span><br><span class="line">		n := n.(*ir.UnaryExpr)</span><br><span class="line">		<span class="keyword">switch</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> n.X.Type().IsSlice():</span><br><span class="line">			op := ssa.OpSliceLen</span><br><span class="line">			<span class="keyword">if</span> n.Op() == ir.OCAP &#123;</span><br><span class="line">				op = ssa.OpSliceCap</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> s.newValue1(op, types.Types[types.TINT], s.expr(n.X))</span><br><span class="line">		<span class="keyword">case</span> n.X.Type().IsString(): <span class="comment">// string; not reachable for OCAP</span></span><br><span class="line">			<span class="keyword">return</span> s.newValue1(ssa.OpStringLen, types.Types[types.TINT], s.expr(n.X))</span><br><span class="line">		<span class="keyword">case</span> n.X.Type().IsMap(), n.X.Type().IsChan():</span><br><span class="line">			<span class="keyword">return</span> s.referenceTypeBuiltin(n, s.expr(n.X))</span><br><span class="line">		<span class="keyword">default</span>: <span class="comment">// array</span></span><br><span class="line">			<span class="keyword">return</span> s.constInt(types.Types[types.TINT], n.X.Type().NumElem())</span><br><span class="line">		&#125;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="数组">数组</span></h1><p>  对于数组，我们只是根据输入数组的NumElem()方法返回一个常数，该方法只是访问输入数组的Bound域。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Array contains Type fields specific to array types.</span></span><br><span class="line"><span class="keyword">type</span> Array <span class="keyword">struct</span> &#123;</span><br><span class="line">	Elem  *Type <span class="comment">// element type</span></span><br><span class="line">	Bound <span class="keyword">int64</span> <span class="comment">// number of elements; &lt;0 if unknown yet</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Type)</span> <span class="title">NumElem</span><span class="params">()</span> <span class="title">int64</span></span> &#123;</span><br><span class="line">	t.wantEtype(TARRAY)</span><br><span class="line">	<span class="keyword">return</span> t.Extra.(*Array).Bound</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="slices-strings">Slices, Strings</span></h1><p>对于切片和字符串，我们必须看一看ssa.OpSliceLen和ssa.OpStringLen是如何处理的。</p>
+<p>当这些调用在Late Expansion阶段和rewriteSelect方法中被降低时，切片和字符串被递归行走，使用指针算术找出它们的大小，如offset+x.ptrSize</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(x *expandState)</span> <span class="title">rewriteSelect</span><span class="params">(leaf *Value, selector *Value, offset <span class="keyword">int64</span>, regOffset Abi1RO)</span> []*<span class="title">LocalSlot</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> selector.Op &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">case</span> OpStringLen, OpSliceLen:</span><br><span class="line">		ls := x.rewriteSelect(leaf, selector.Args[<span class="number">0</span>], offset+x.ptrSize, regOffset+RO_slice_len)</span><br><span class="line">		locs = x.splitSlots(ls, <span class="string">&quot;.len&quot;</span>, x.ptrSize, leafType)</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> locs</span><br></pre></td></tr></table></figure>
+
+<h1><span id="maps-channels">Maps, Channels</span></h1><p>最后，对于Maps, Channels，我们使用 referenceTypeBuiltin 辅助工具。它的内部工作原理有点神奇，但它最终做的是获取map/chan参数的地址，并以零偏移量引用其结构布局，就像unsafe.Pointer(uintptr(unsafe.Pointer(s))一样，最终返回第一个结构域的值。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// referenceTypeBuiltin generates code for the len/cap builtins for maps and channels.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *state)</span> <span class="title">referenceTypeBuiltin</span><span class="params">(n *ir.UnaryExpr, x *ssa.Value)</span> *<span class="title">ssa</span>.<span class="title">Value</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> !n.X.Type().IsMap() &amp;&amp; !n.X.Type().IsChan() &#123;</span><br><span class="line">		s.Fatalf(<span class="string">&quot;node must be a map or a channel&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// if n == nil &#123;</span></span><br><span class="line">	<span class="comment">//   return 0</span></span><br><span class="line">	<span class="comment">// &#125; else &#123;</span></span><br><span class="line">	<span class="comment">//   // len</span></span><br><span class="line">	<span class="comment">//   return *((*int)n)</span></span><br><span class="line">	<span class="comment">//   // cap</span></span><br><span class="line">	<span class="comment">//   return *(((*int)n)+1)</span></span><br><span class="line">	<span class="comment">// &#125;</span></span><br><span class="line">	lenType := n.Type()</span><br><span class="line">	nilValue := s.constNil(types.Types[types.TUINTPTR])</span><br><span class="line">	cmp := s.newValue2(ssa.OpEqPtr, types.Types[types.TBOOL], x, nilValue)</span><br><span class="line">	b := s.endBlock()</span><br><span class="line">	b.Kind = ssa.BlockIf</span><br><span class="line">	b.SetControl(cmp)</span><br><span class="line">	b.Likely = ssa.BranchUnlikely</span><br><span class="line"></span><br><span class="line">	bThen := s.f.NewBlock(ssa.BlockPlain)</span><br><span class="line">	bElse := s.f.NewBlock(ssa.BlockPlain)</span><br><span class="line">	bAfter := s.f.NewBlock(ssa.BlockPlain)</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">switch</span> n.Op() &#123;</span><br><span class="line">	<span class="keyword">case</span> ir.OLEN:</span><br><span class="line">		<span class="comment">// length is stored in the first word for map/chan</span></span><br><span class="line">		s.vars[n] = s.load(lenType, x)</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">return</span> s.variable(n, lenType)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>hmap和hchan结构的定义表明，它们的第一个字段确实包含我们所需要的len，即分别是活地图单元和通道队列数据。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	count     <span class="keyword">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="keyword">uint8</span></span><br><span class="line">	B         <span class="keyword">uint8</span></span><br><span class="line">	noverflow <span class="keyword">uint16</span></span><br><span class="line">	hash0     <span class="keyword">uint32</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer</span><br><span class="line">	oldbuckets unsafe.Pointer</span><br><span class="line">	nevacuate  <span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> hchan <span class="keyword">struct</span> &#123;</span><br><span class="line">	qcount   <span class="keyword">uint</span>           <span class="comment">// total data in the queue</span></span><br><span class="line">	dataqsiz <span class="keyword">uint</span></span><br><span class="line">	buf      unsafe.Pointer</span><br><span class="line">	elemsize <span class="keyword">uint16</span></span><br><span class="line">	closed   <span class="keyword">uint32</span></span><br><span class="line">	elemtype *_type</span><br><span class="line">	sendx    <span class="keyword">uint</span></span><br><span class="line">	recvx    <span class="keyword">uint</span></span><br><span class="line">	recvq    waitq</span><br><span class="line">	sendq    waitq</span><br><span class="line"></span><br><span class="line">	lock mutex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="临别赠言">临别赠言</span></h1><p>就这样吧! 这篇文章没有我想象的那么长，我只希望它对你来说也是有趣的。</p>
+<p>我对Go编译器的内部工作没有什么经验，所以有些东西可能是不对的。另外，很多事情在不久的将来都会发生变化，特别是泛型和新的类型系统会在接下来的几个Go版本中出现，但至少我希望我提供了一个方法，让你可以用来开始自己的挖掘。</p>
+<p>在任何情况下，如果您有任何意见、建议、关于新文章的想法，或者只是简单地谈论Go，请不要犹豫。</p>
+<p>直到下一次，再见!</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/22_Mysql_Optimizer/" class="archive-article-date">
-  	<time datetime="2020-12-31T15:55:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/22_Mysql_Optimizer/">Mysql优化器索引选择</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/29_Golang_Len/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/21_Mysql_EXPLAIN/" class="archive-article-date">
-  	<time datetime="2020-11-11T15:11:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-11</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/28_Gin_Trees_4/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Gin框架学习（四）--Trees</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/21_Mysql_EXPLAIN/">Mysql EXPLAIN命令字段整理</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/20_Mysql_Extra/" class="archive-article-date">
-  	<time datetime="2020-10-02T02:32:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/20_Mysql_Extra/">Mysql EXPLAIN命令中的Extra字段整理</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/2/">Next »</a>
-    </nav>
   
-
 
 
           </div>
@@ -462,8 +397,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
