@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>学习errgroup | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/3/index.html">
+  <meta name="description" content="听说今天是中元节~~~~~~，该节是追怀先人的一种文化传统节日，其文化核心是敬祖尽孝，并不是鬼节。学习以下errgroup。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习errgroup">
+<meta property="og:url" content="https://gopher.vip/30_errgroup/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="听说今天是中元节~~~~~~，该节是追怀先人的一种文化传统节日，其文化核心是敬祖尽孝，并不是鬼节。学习以下errgroup。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-22T12:51:00.000Z">
+<meta property="article:modified_time" content="2021-09-19T03:51:09.647Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -139,297 +141,199 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-30_errgroup" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      学习errgroup
+    </h1>
+  
+
+        
+        <a href="/30_errgroup/" class="archive-article-date">
+  	<time datetime="2021-08-22T12:51:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-22</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>听说今天是中元节~~~~~~，该节是追怀先人的一种文化传统节日，其文化核心是敬祖尽孝，并不是鬼节。<br>学习以下errgroup。</p>
+</blockquote>
+<span id="more"></span>
+
+<!-- toc -->
+
+<ul>
+<li><a href="#%E7%BB%93%E6%9E%84">结构</a></li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84">代码结构</a><ul>
+<li><a href="#func-withcontextctx-contextcontext-group-contextcontext">func WithContext(ctx context.Context) (*Group, context.Context)</a></li>
+<li><a href="#func-g-group-wait-error">func (g *Group) Wait() error</a></li>
+<li><a href="#func-g-group-gof-func-error">func (g *Group) Go(f func() error)</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+
+<p>errgroup位于golang.org/x/sync，也是golang官方扩展包下。他的功能类似于<a href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>，都会阻塞等待直到所有相关goroutine执行完毕。</p>
+<p>其区别就像他的名字一样，errgroup封装了error的处理，帮助开发人员更友好的处理相关goroutine中出现的error。</p>
+<h1><span id="结构">结构</span></h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Group <span class="keyword">struct</span> &#123;</span><br><span class="line">	cancel <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line">	wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line">	errOnce sync.Once</span><br><span class="line">	err     error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>cancel  这里保存的是contex.WithCancel返回的第二个参数。取消函数，主要来包装context.WithCancel的CancelFunc</li>
+<li>wg      借助于WaitGroup实现的，可以等待所有go程结束参见<a href="/12_sync.WaitGroup/">理解sync.WaitGroup</a></li>
+<li>errOnce 使用sync.Once实现只输出第一个err参见<a href="/6_once/">sync.Once</a></li>
+<li>err     保存第一个错误</li>
+</ul>
+<h1><span id="代码结构">代码结构</span></h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithContext</span><span class="params">(ctx context.Context)</span> <span class="params">(*Group, context.Context)</span></span> </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *Group)</span> <span class="title">Wait</span><span class="params">()</span> <span class="title">error</span></span> </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *Group)</span> <span class="title">Go</span><span class="params">(f <span class="keyword">func</span>()</span> <span class="title">error</span>)</span> </span><br></pre></td></tr></table></figure>
+
+<p>整个errgroup的结构及其简单，仅提供了3个方法。使用起来也及其简单。</p>
+<ul>
+<li>WithContext(ctx context.Context) (*Group, context.Context) </li>
+<li>Wait() error </li>
+<li>Go(f func() error)</li>
+</ul>
+<h2><span id="func-withcontextctx-contextcontext-group-contextcontext">func WithContext(ctx context.Context) (*Group, context.Context)</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithContext</span><span class="params">(ctx context.Context)</span> <span class="params">(*Group, context.Context)</span></span> &#123;</span><br><span class="line">	ctx, cancel := context.WithCancel(ctx)</span><br><span class="line">	<span class="keyword">return</span> &amp;Group&#123;cancel: cancel&#125;, ctx</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>WithContext返回一个新的Group和一个从ctx派生的相关Context。派生的上下文在传递给Go()第一次出现非零错误或Wait第一次返回时被取消。传递给 Go 的函数第一次返回非零错误时，或 Wait 第一次返回时，以先发生者为准。 第一次。 </p>
+<h2><span id="func-g-group-wait-error">func (g *Group) Wait() error</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *Group)</span> <span class="title">Wait</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	g.wg.Wait()</span><br><span class="line">	<span class="keyword">if</span> g.cancel != <span class="literal">nil</span> &#123;</span><br><span class="line">		g.cancel()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> g.err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用WaitGroup阻塞等待，直到所有来自Go()方法的函数调用都返回，然后返回其中第一个非nil的错误（如果有的话）。</p>
+<h2><span id="func-g-group-gof-func-error">func (g *Group) Go(f func() error)</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *Group)</span> <span class="title">Go</span><span class="params">(f <span class="keyword">func</span>()</span> <span class="title">error</span>)</span> &#123;</span><br><span class="line">	g.wg.Add(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> g.wg.Done()</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err := f(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			g.errOnce.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">				g.err = err</span><br><span class="line">				<span class="keyword">if</span> g.cancel != <span class="literal">nil</span> &#123;</span><br><span class="line">					g.cancel()</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>入参为仅有error返回值的func(),Go()在一个新的goroutine中调用给定的函数。利用once的特点收集第一个获得到的error。<br>第一个返回非nil错误的调用将取消该组；其错误将被Wait()返回。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/30_errgroup/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/29_Golang_Len/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Go如何计算len()..?</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/5_redis-persistence/" class="archive-article-date">
-  	<time datetime="2019-05-22T13:49:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/5_redis-persistence/">Redis 持久化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/4_redis-expire/" class="archive-article-date">
-  	<time datetime="2019-05-20T14:17:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/4_redis-expire/">Redis过期时间整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/3_redis-struct/" class="archive-article-date">
-  	<time datetime="2019-05-16T14:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/3_redis-struct/">Redis存储结构整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2_context/" class="archive-article-date">
-  	<time datetime="2019-05-05T02:10:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2_context/">认识Context</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/1_gc/" class="archive-article-date">
-  	<time datetime="2019-04-18T16:10:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/1_gc/">Golang 垃圾回收</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">« Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
-  
-
 
 
           </div>
@@ -452,8 +356,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
