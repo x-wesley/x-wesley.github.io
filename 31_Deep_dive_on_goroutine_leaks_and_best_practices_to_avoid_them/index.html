@@ -6,18 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>我勒个擦</title>
+  <title>深入了解goroutine的泄漏和避免泄漏的最佳做法 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/page/3/index.html">
+  <meta name="description" content="本文翻译自《Deep dive on goroutine leaks and best practices to avoid them》知识点：节假日是由国务院制定的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入了解goroutine的泄漏和避免泄漏的最佳做法">
+<meta property="og:url" content="https://gopher.vip/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="本文翻译自《Deep dive on goroutine leaks and best practices to avoid them》知识点：节假日是由国务院制定的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gopher.vip/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_1.png">
+<meta property="og:image" content="https://gopher.vip/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_2.png">
+<meta property="og:image" content="https://gopher.vip/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_3.png">
+<meta property="article:published_time" content="2021-09-21T10:55:00.000Z">
+<meta property="article:modified_time" content="2021-09-23T14:02:12.205Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gopher.vip/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_1.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -139,22 +145,20 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-11_make&amp;new" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/11_make&new/">make &amp; new</a>
+    <h1 class="article-title" itemprop="name">
+      深入了解goroutine的泄漏和避免泄漏的最佳做法
     </h1>
   
 
         
-        <a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
+        <a href="/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/" class="archive-article-date">
+  	<time datetime="2021-09-21T10:55:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-21</time>
 </a>
         
       </header>
@@ -162,11 +166,98 @@
     <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
-<p>Golang为初始化一个变量提供了两个关键字：make和new。其功能是等价的，但是使用场景、实现细节有略微的差别。</p>
+<p>本文翻译自<a target="_blank" rel="noopener" href="https://mourya-g9.medium.com/deep-dive-on-goroutine-leaks-and-best-practices-to-avoid-them-a35021383f64">《Deep dive on goroutine leaks and best practices to avoid them》</a><br>知识点：节假日是由国务院制定的</p>
 </blockquote>
-        
+<span id="more"></span>
+
+<!-- toc -->
+
+
+
+<!-- tocstop -->
+
+<p>Go的奇妙之处在于，我们可以使用goroutines和channel轻松地执行并发任务。但是在生产环境中使用goroutines和channel，如果没有适当的背景，不知道它们的行为方式，会造成一些严重的影响。</p>
+<p>好吧，我们就面临着这样的影响，我们在goroutines中出现了泄漏，导致应用服务器随着时间的推移而膨胀，消耗了大量的CPU和频繁的GC暂停，影响了多个API的SLA。</p>
+<p>从这篇文章中可以看到什么</p>
+<ul>
+<li>理解什么是goroutine泄漏。</li>
+<li>理解goroutine泄露的多种方式。</li>
+<li>详细介绍一个造成goroutine泄露的真实场景。</li>
+<li>我们是如何弄清goroutine泄漏的？</li>
+<li>阻止goroutine泄漏的最佳实践是什么？</li>
+</ul>
+<p><img src="/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_1.png" alt="31_1"></p>
+<p>正如你在上面所附的指标中看到的，goroutines开始随着时间的推移呈指数上升。唯一的一次下降是当我们的现货实例被AWS拿走，新的实例被启动，或者有一个新的版本，杀死了现有的容器并产生了新的容器。</p>
+<p>如果你观察GC暂停的时间，它会随着活动的goroutine的数量不断增加。GC暂停的次数越多，CPU的利用率就越高，响应时间就越长。</p>
+<p>回到这个问题上，<em>什么是goroutine泄漏</em>？</p>
+<p>goroutine泄漏是指客户端生成一个goroutine来做一些异步任务，并在任务完成后将一些数据写入一个通道，但是</p>
+<ul>
+<li><p>没有listener从数据被写入的通道消费。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newgoroutine</span><span class="params">(dataChan <span class="keyword">chan</span> &lt;dataType&gt;)</span></span> &#123;</span><br><span class="line">     data := makeNetworkCall()</span><br><span class="line">     dataChan &lt;- data</span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">     dataChan := <span class="built_in">make</span>(<span class="keyword">chan</span> &lt;dataType&gt;)</span><br><span class="line">     <span class="keyword">go</span> newgoroutine(dataChan)</span><br><span class="line">     <span class="comment">// Some application processing (but forgot to consume data from the channel (dataChan))</span></span><br><span class="line">     <span class="keyword">return</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在上述情况下，代码成功地完成了执行，好像根本就没有问题。但这里发生的情况是，会有一个悬空的goroutine驻留在内存中，占用CPU和RAM。</span><br><span class="line"></span><br><span class="line">为什么呢？</span><br><span class="line"></span><br><span class="line">主要原因是第<span class="number">3</span>行，我们正在向一个通道写入数据，但根据Go原则，一个未缓冲的通道会阻止向通道的写入，直到消费者从该通道消耗信息。</span><br><span class="line"></span><br><span class="line">所以在这种情况下，第<span class="number">4</span>行的返回将永远不会被执行，并且newgoroutine函数在整个应用程序生命周期中都被卡住，因为这个通道没有消费者。</span><br></pre></td></tr></table></figure></li>
+<li><p>在goroutine启动和通道监听器之间有一些条件逻辑。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Re-iterating above example by tweaking the flow a bit</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newgoroutine</span><span class="params">(dataChan <span class="keyword">chan</span> &lt;dataType&gt;)</span></span> &#123;</span><br><span class="line">     data := makeNetworkCall()</span><br><span class="line">     dataChan &lt;- data</span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">     dataChan := <span class="built_in">make</span>(<span class="keyword">chan</span> &lt;dataType&gt;)</span><br><span class="line">     <span class="keyword">go</span> newgoroutine(dataChan)</span><br><span class="line">     <span class="comment">// Some application processing </span></span><br><span class="line">     <span class="keyword">if</span> processingError != <span class="literal">nil</span> &#123;</span><br><span class="line">          <span class="keyword">return</span></span><br><span class="line">     &#125;</span><br><span class="line">     data := &lt;- dataChan</span><br><span class="line">     <span class="comment">// Do something with data</span></span><br><span class="line">     <span class="keyword">return</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在这种情况下，有一个小小的改进。我们有一个消费者从dataChan中消费数据，但是从我们生成goroutine开始，到我们开始从通道中消费数据之前，有大量的应用程序代码驻留在那里，这些代码可以在一些处理错误|DB错误|无指针异常|恐慌中退出主函数，由于这些原因，数据通道的消费者永远不会被执行。</span><br><span class="line"></span><br><span class="line">这就是一个goroutine可以保持悬空并导致泄漏的情况。</span><br><span class="line"></span><br><span class="line">我们不能在应用处理之前将数据通道的消费移到顶部，因为消费者会阻止应用处理，直到它收到数据，从而消除了并发任务的执行。</span><br></pre></td></tr></table></figure></li>
+<li><p>被遗落的发送方。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">以上两种情况是当goroutine因为没有通道的接收器而被阻塞，或者接收器从通道消费数据的代码块被跳过。</span><br><span class="line"></span><br><span class="line">当我们把一个通道传递给goroutine来消费时，当发送者向通道发送数据时出现了问题，这是否也是同样的情况？</span><br><span class="line"></span><br><span class="line">是的 -- 在这种情况下，goroutine也会被挂起。</span><br><span class="line"></span><br><span class="line">Ex: </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newgoroutine</span><span class="params">(dataChan <span class="keyword">chan</span> &lt;dataType&gt;)</span></span> &#123;</span><br><span class="line">     <span class="comment">// Consume data from dataChan </span></span><br><span class="line">     data := &lt;- dataChan</span><br><span class="line">     <span class="comment">// Do some processing on the data</span></span><br><span class="line">     <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">     dataChan := <span class="built_in">make</span>(<span class="keyword">chan</span> &lt;dataType&gt;)</span><br><span class="line">     <span class="keyword">go</span> newgoroutine(dataChan)</span><br><span class="line">     data, err := makeNetworkCall()</span><br><span class="line">     <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         <span class="keyword">return</span> </span><br><span class="line">     &#125;</span><br><span class="line">     dataChan &lt;- data <span class="comment">// This piece of code is never executed in error case of networkCall which makes newgoroutine dangling</span></span><br><span class="line">     <span class="comment">// Do something with data</span></span><br><span class="line">     <span class="keyword">return</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>好的，95%的goroutine泄露都是因为这3种情况中的一种，在我们的案例中，是由于<em>情景-2</em>。</p>
+<p>我们在GoIbibo-Makemytrip的工作是折扣和便利费服务。</p>
+<p>当客户应用一个促销代码时，我们有一套规则要执行，以找出正确的折扣。我们有另一个微服务，我们称之为实时动态折扣器（DD），它试图根据一些算法（黑盒子）来计算折扣。</p>
+<p>这个动态折扣是一个A/B实验，只有10%的用户会参与其中。只有当我们的静态规则中存在有效的折扣时，我们才会覆盖DD的折扣。</p>
+<p>一个关于我们的工作的伪代码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">loadDDDiscount</span><span class="params">(ddChan <span class="keyword">chan</span> &lt;dataType&gt;)</span></span> &#123;</span><br><span class="line">   ddRequest := formDDRequest()</span><br><span class="line">   response := callDDService(ddRequest)</span><br><span class="line">   ddChan &lt;- response</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ApplyPromo</span><span class="params">()</span> <span class="params">(discount <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">   ddChan := <span class="built_in">make</span>(<span class="keyword">chan</span> &lt;dataType&gt;)</span><br><span class="line">   <span class="keyword">if</span> ddEnabledRequest &#123;</span><br><span class="line">      loadDDDiscount(ddChan)</span><br><span class="line">   &#125;</span><br><span class="line">   discount, err = validateStaticRules()</span><br><span class="line">   <span class="comment">// Got to say there is hell lot of processing &amp; multiple error handlings while processing </span></span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> ddEnabledRequest &#123;</span><br><span class="line">      ddDiscount &lt;- ddChan</span><br><span class="line">      discount = overrideDiscount()</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> discount, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们只有在处理完静态规则后才需要DD的响应。所以来自ddChan的消耗将只在最后进行。</p>
+<p>如果静态规则的评估有问题|如果没有满足请求的有效规则|如果用户应用了一些假的促销活动，我们从ddChan中消耗数据的代码将无法到达，这导致loadDDDiscount函数成为一个悬空的goroutine。</p>
+<p>那么，有什么方法可以解决这个问题？</p>
+<p><strong>方法-1</strong></p>
+<ul>
+<li>方法 -&gt; 从我们启动goroutine开始，到我们从退出的通道消耗数据为止，我们识别每一个错误条件，并在每一个返回语句前放置一个接收器，以解除对生成的goroutine的封锁。</li>
+<li>陷阱 -&gt; 我们必须手动找到所有的边缘情况，并且在将来，如果我们必须处理更多的错误情况，我们需要记住在返回之前我们需要消耗哪些通道的数据。 <strong>有问题的解决方案</strong> 。</li>
+</ul>
+<p><strong>方法-2</strong></p>
+<ul>
+<li>方法 -&gt; 与其在每个错误的情况下放置一个接收器，为什么不设置一个可以从通道中接收数据的延迟函数。</li>
+<li>陷阱 – 在成功的情况下，数据将在处理完静态规则后从通道中读取。因此，如果我们在defer函数中开始接收通道中的数据，那么在成功的情况下就会阻塞主goroutine。  <strong>错误的解决方案</strong> 。</li>
+</ul>
+<p><strong>方法-3</strong> </p>
+<ul>
+<li>完美的方法，几乎没有变化。在上述所有场景中，我们创建了一个未缓冲的通道，阻止发送者向该通道发送数据，直到接收者收到数据。这里的主要问题是我们不确定由于我们的应用处理，接收方的流是否会被执行。那么，简单的解决方案是创建一个上限为1的缓冲通道。有了这个，即使没有生成消费者，或者生成的消费者代码没有达到，发送者也不会被阻止写一次数据。<br><img src="/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_2.png" alt="31_2"></li>
+<li>陷阱 -&gt; 绝对是零。这与非缓冲通道的工作原理完全相同，但为我们提供了一个额外的能力，即发送者在发送数据时不会受到阻碍，而消费者可以在任何时候消费它，而且生成的goroutine也不会等待消费者的到来。</li>
+</ul>
+<p>我们用第三种方法将变化带入生产，你可以看到显著的影响。<br> <img src="/image/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them.md/31_3.png" alt="31_3"></p>
+<p>以前是线性增长的goroutine数量，现在下降到150个，我们的GC暂停频率也是如此。<br><em>整个事情中最痛苦的部分是，如何找到代码中存在goroutine泄漏的部分？</em></p>
+<p>好吧，有一些包，如<a target="_blank" rel="noopener" href="https://github.com/uber-go/goleak">https://github.com/uber-go/goleak</a>，可以帮助你找到goroutine的泄漏，我发现用这个包来调试泄漏很困难。所以我的方法是这样的。<br>陷阱 -&gt; 绝对是零。这与非缓冲通道的工作原理完全相同，但为我们提供了一个额外的能力，即发送者在发送数据时不会受到阻碍，而消费者可以在任何时候消费它，而且生成的goroutine也不会等待消费者的到来。</p>
+<ul>
+<li>当服务器启动时，使用debug.SetGCPercent(-1)禁用垃圾收集器。</li>
+<li>现在运行代码中每一个使用Go程序的流程（Dev Env）。</li>
+<li>在每个API的入口处，打印在开始和执行API之前和之后运行的goroutines的数量。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ApplyPromo</span><span class="params">()</span></span> &#123;</span><br><span class="line">   fmt.Println(runtime.NumGoroutine())</span><br><span class="line">   <span class="keyword">defer</span> fmt.Println(runtime.NumGoroutine()</span><br><span class="line">   <span class="comment">// Process your application logic</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>现在，如果一个服务在前后返回不同的Goroutines数量，那么这个流程就有一个漏洞。</li>
+</ul>
+<p>我们有近20个API和大约35-40个地方使用了goroutines的并发性。幸运的是，我能够在前3次迭代中钻研泄漏问题，并发现了这个存在泄漏的流程。<br><em>希望这个经验能够帮助大家在编写一些并发代码的时候，不要泄露goroutines。</em></p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -175,16 +266,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/11_make&new/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/30_errgroup/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">学习errgroup</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -204,585 +354,15 @@
 
 
 
-
-  
-    <article id="post-10_pprof-profile" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
-
-        
-        <a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Golang性能优化比较受欢迎的方式是go tool，可以非常直观的把内存、cpu等资源展现给用户。<br>由于我司对生产环境的限制，无法暴露pprof的端口。这导致导致我只能dump一份profile文件进行分析(http://{ip}:{port}/debug/pprof/heap?debug=1)。<br>这份纯文本信息的profile对于智商低下又没有耐心的我来讲，wqnmlgb的。因此对这份操蛋的文本整理了一下。</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/10_pprof-profile/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-9_sync.Map" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
-  
-
-        
-        <a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>map是不支持并发操作的，当出现并发操作的时候map会抛出”concurrent map writes”异常。golang提供了一个支持并发操作的map–sync.Map。</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/9_sync.Map/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-8_map" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/8_map/">理解Map</a>
-    </h1>
-  
-
-        
-        <a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>map是在编程中使用频繁的数据结构，大部分语言都会有map相似的结构。</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/8_map/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-7_pool" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
-  
-
-        
-        <a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。<br>设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/7_pool/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-6_once" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        
-        <a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>sync.Once表示只执行一次函数,是开箱即用的。</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/6_once/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-5_redis-persistence" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/5_redis-persistence/">Redis 持久化</a>
-    </h1>
-  
-
-        
-        <a href="/5_redis-persistence/" class="archive-article-date">
-  	<time datetime="2019-05-22T13:49:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>因为Redis是内存数据库，他将数据库状态存储在内存里面，所以如果一旦服务器进程退出，那么服务器中的数据库状态也会消失不见。</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/5_redis-persistence/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-4_redis-expire" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/4_redis-expire/">Redis过期时间整理</a>
-    </h1>
-  
-
-        
-        <a href="/4_redis-expire/" class="archive-article-date">
-  	<time datetime="2019-05-20T14:17:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Redis有四个不同的命令可以用于设置键的生存时间或过期时间</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/4_redis-expire/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-3_redis-struct" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/3_redis-struct/">Redis存储结构整理</a>
-    </h1>
-  
-
-        
-        <a href="/3_redis-struct/" class="archive-article-date">
-  	<time datetime="2019-05-16T14:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>整理了一下 redis 存储结构</p>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/3_redis-struct/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-2_context" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2_context/">认识Context</a>
-    </h1>
-  
-
-        
-        <a href="/2_context/" class="archive-article-date">
-  	<time datetime="2019-05-05T02:10:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Context 是一个请求的全局上下文，携带了截止时间、手动取消等信号，并包含一个并发安全的map用于携带数据。<br>主要用来在 goroutine 之间传递上下文信息，包括：取消信号、超时时间、截止时间、k-v 等</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2_context/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">« Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next »</a>
-    </nav>
   
 
+  
+
+  
+
+  
 
 
           </div>
@@ -804,8 +384,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
