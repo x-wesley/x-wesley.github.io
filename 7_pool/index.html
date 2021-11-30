@@ -5,23 +5,23 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="https://gopher.vip">
+  <link rel="dns-prefetch" href="https://blog.gopher.vip">
   <title>sync.Pool | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sync.Pool">
-<meta property="og:url" content="https://gopher.vip/7_pool/index.html">
+<meta property="og:url" content="https://blog.gopher.vip/7_pool/index.html">
 <meta property="og:site_name" content="我勒个擦">
 <meta property="og:description" content="我们通常用golang来构建高并发场景下的应用，但是由于golang内建的GC机制会影响应用的性能，为了减少GC，golang提供了对象内存空间重用的机制，也就是sync.Pool对象池。sync.Pool是可伸缩的，并发安全的。其大小仅受限于内存的大小，可以被看作是一个存放可重用对象的值的容器。设计的目的是存放已经分配的但是暂时不用的对象，在需要用到的时候直接从pool中取。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gopher.vip/image/7_pool/pool-get.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/7_pool/pool-get.png">
 <meta property="article:published_time" content="2019-09-03T06:56:06.000Z">
 <meta property="article:modified_time" content="2021-06-06T12:53:58.060Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gopher.vip/image/7_pool/pool-get.png">
+<meta name="twitter:image" content="https://blog.gopher.vip/image/7_pool/pool-get.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -290,7 +290,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/7_pool/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://blog.gopher.vip/7_pool/" alt="微信分享二维码">
     </div>
 </div>
 
