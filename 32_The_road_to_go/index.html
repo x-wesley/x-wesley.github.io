@@ -6,18 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://gopher.vip">
-  <title>Archives | 我勒个擦</title>
+  <title>Go语言之路 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://gopher.vip/archives/page/3/index.html">
+  <meta name="description" content="本文翻译自《https:&#x2F;&#x2F;engineering.godeltech.com&#x2F;the-road-to-go&#x2F;》">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言之路">
+<meta property="og:url" content="https://gopher.vip/32_The_road_to_go/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="本文翻译自《https:&#x2F;&#x2F;engineering.godeltech.com&#x2F;the-road-to-go&#x2F;》">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gopher.vip/image/32_The_road_to_go/32_1.png">
+<meta property="article:published_time" content="2021-11-22T07:50:00.000Z">
+<meta property="article:modified_time" content="2021-11-30T14:40:54.098Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gopher.vip/image/32_The_road_to_go/32_1.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -139,307 +143,196 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-32_The_road_to_go" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Go语言之路
+    </h1>
+  
+
+        
+        <a href="/32_The_road_to_go/" class="archive-article-date">
+  	<time datetime="2021-11-22T07:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-22</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文翻译自<a target="_blank" rel="noopener" href="https://engineering.godeltech.com/the-road-to-go/">《https://engineering.godeltech.com/the-road-to-go/》</a></p>
+</blockquote>
+<span id="more"></span>
+
+<!-- toc -->
+
+<ul>
+<li><a href="#golang%E7%9A%84%E7%94%A8%E6%88%B7%E6%A1%88%E4%BE%8B">Golang的用户案例。</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98">其他编程语言面临的挑战</a></li>
+<li><a href="#go%E7%9A%84%E4%BC%98%E7%82%B9">Go的优点</a></li>
+<li><a href="#go%E5%8F%AF%E4%BB%A5%E7%94%A8%E6%9D%A5%E5%81%9A%E4%BB%80%E4%B9%88%E5%AE%83%E4%B8%8E%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C">Go可以用来做什么，它与其他语言有什么不同？</a></li>
+<li><a href="#%E7%BB%93%E8%AE%BA">结论</a></li>
+</ul>
+<!-- tocstop -->
+
+<p><a target="_blank" rel="noopener" href="https://www.godeltech.com/golang-technologies/">Golang</a>，也被称为Go，是一种开源的编程语言。它是由谷歌创建的，旨在提供更快的应用程序，提高生产力，以及高代码效率。它被视为易于学习和开始使用。</p>
+<h2><span id="golang的用户案例">Golang的用户案例。</span></h2><ul>
+<li>云和网络服务–现在用Go构建服务比以前更容易了</li>
+<li>命令行接口 - 使用Go来创建快速的CLI</li>
+<li>网络开发 - Go为快速和可扩展的网络应用提供动力</li>
+<li>DevOps和网站可靠性 - Go是为支持<a target="_blank" rel="noopener" href="https://www.godeltech.com/continuous-delivery/">DevOps</a>和SRE而建立的。</li>
+</ul>
+<p><img src="/image/32_The_road_to_go/32_1.png" alt="32_1"></p>
+<h2><span id="其他编程语言面临的挑战">其他编程语言面临的挑战</span></h2><p>在其他编程语言中，当你需要用服务器建立一个应用程序时，你需要额外的服务器，并知道规格，以编写足够的代码。然而，Go不需要任何额外的服务器。你只需在一行上运行，使之变得简单易行。你只需要代码和配置服务器请求的快速性等。</p>
+<p>我在ActionScript方面有经验，花了3个月的时间来学习建立网络应用所需的所有Java规范。JSE、JEE、JVM、TomCat规格等。当我开始学习Go时，只花了一个星期就开始构建网络应用。</p>
+<h2><span id="go的优点">Go的优点</span></h2><p>Go的突出特点是速度、通信和内存容量，大约与C++的水平相同或更快。从我参与的C语言工作来看，你可以在Go中建立一个更快的应用程序。一般来说，用于监控汽车系统的C语言应用程序应该是很快的，但困难在于出错的时候。Go的语法和Python一样简洁，所以它吸引了那些想要更多性能的程序员。</p>
+<p>Go在应用开发的初期有好处，因为你不需要担心依赖关系或构建配置。当你使用任何第三方库时，它们会在你构建应用时被自动添加到你的项目中。你所需要做的就是运行<code>go mod init</code>来初始化新的根模块。</p>
+<p>Go也有一个垃圾收集器，所以你不必太担心内存管理。然而，这也有弊端。Go的一个重要功能是goroutines。这是一种轻量级的方法，可以独立运行一个函数或方法，并同时与你程序中存在的任何其他Goroutines相连接。Go中的垃圾收集器是在堆增加两次和至少每两分钟一次的情况下强制进行的。</p>
+<p>现在让我们想象一下，我们需要建立一个高负载的应用程序，每秒有几百或几千个同时进行的任务，应该向用户发送通知。如果GC每两分钟强制一次，这意味着所有当时正在运行的goroutines必须暂停，直到GC完成它的工作。这时，goroutines才继续工作。当企业需要立即发送通知时，这确实是一个瓶颈。很明显，我们可以禁用GC，从Go代码中触发，但这需要一个有经验的团队和巨大的测试费用。</p>
+<h2><span id="go可以用来做什么它与其他语言有什么不同">Go可以用来做什么，它与其他语言有什么不同？</span></h2><p>当你为你的应用程序设计一个微服务架构时，你不需要真正关心你应该采取什么语言。你可以用Java建立一些服务，用PHP建立另一个服务，等等。它们可以通过REST、SOAP、RPC等方式相互通信。但是，如果服务之间的通信时间对你的应用程序很重要，而且你真的想把它降到最低，你可以：减少请求/响应的序列化/序列化时间（最好的是gRPC协议），并通过选择没有虚拟机的编译语言（C、C++、Go等），在服务端删除VM/解释器。你也可以使用轻量级的异步函数/方法来在单个服务副本上运行尽可能多的请求。</p>
+<p>在我看来，最好的解决方案是Go + gRPC，只是因为：</p>
+<ul>
+<li>Go支持gRPC的所有功能，而且非常容易实现</li>
+<li>Go有GC，你不需要像C那样关心内存问题</li>
+<li>Go有简单的语法，因此，新的团队成员不需要花很多时间来理解服务代码</li>
+<li>你可以在微服务、移动应用或桌面中使用Go。我不建议现在就在Go中构建移动应用，因为它刚刚开始支持移动SDK。目前，Kotlin/Dart在这方面要好得多。</li>
+</ul>
+<p>Java和Go都有一个垃圾收集器。从开发者的角度来看，Java很复杂，因为每个独立的应用程序都要用不同的参数对GC进行测试，这很耗费时间。对于Go，只有一个选择，你只需接受或拒绝它。</p>
+<h2><span id="结论">结论</span></h2><p>展望这个简单而复杂的语言将走向何方，我预测Go V2将带来像Java一样的泛型，但会带来成本方面的好处，并在未来建立通用解决方案。我也希望移动SDK能得到改进。</p>
+<p>Go是一种非常年轻的语言，我们没有很多公开的框架，因为我们还没有发掘出所有的领域来编写完整的所需的库。在我看来，如果你在Go中读到了什么，就用Go来写吧。语言很简单–自己写吧</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/12_sync.WaitGroup/" class="archive-article-date">
-  	<time datetime="2020-02-22T07:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/12_sync.WaitGroup/">理解sync.WaitGroup</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/11_make&new/" class="archive-article-date">
-  	<time datetime="2020-01-18T04:00:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/11_make&new/">make &amp; new</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+
       
+
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/10_pprof-profile/" class="archive-article-date">
-  	<time datetime="2019-11-29T13:56:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/10_pprof-profile/">pprof---- heap profile 字段整理</a>
-    </h1>
-  
+      </div>
+    </span>
+  </div>
+</div>
 
-        <div class="article-info info-on-right">
-          
-          
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://gopher.vip/32_The_road_to_go/" alt="微信分享二维码">
+    </div>
+</div>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/9_sync.Map/" class="archive-article-date">
-  	<time datetime="2019-10-05T02:50:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-05</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">深入了解goroutine的泄漏和避免泄漏的最佳做法</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/9_sync.Map/">理解sync.Map</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/8_map/" class="archive-article-date">
-  	<time datetime="2019-09-10T13:45:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/8_map/">理解Map</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/7_pool/" class="archive-article-date">
-  	<time datetime="2019-09-03T06:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/7_pool/">sync.Pool</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/6_once/" class="archive-article-date">
-  	<time datetime="2019-06-27T13:56:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/6_once/">sync.Once</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/5_redis-persistence/" class="archive-article-date">
-  	<time datetime="2019-05-22T13:49:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/5_redis-persistence/">Redis 持久化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/4_redis-expire/" class="archive-article-date">
-  	<time datetime="2019-05-20T14:17:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/4_redis-expire/">Redis过期时间整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/3_redis-struct/" class="archive-article-date">
-  	<time datetime="2019-05-16T14:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/3_redis-struct/">Redis存储结构整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">« Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/4/">Next »</a>
-    </nav>
-  
-
 
 
           </div>
@@ -462,8 +355,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
