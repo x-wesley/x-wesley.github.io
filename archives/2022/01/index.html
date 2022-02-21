@@ -6,17 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.gopher.vip">
-  <title>Golang内存模型 | 我勒个擦</title>
+  <title>Archives: 2022/1 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="牛年牛逼轰轰~~对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档The Go Memory Model。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Golang内存模型">
-<meta property="og:url" content="https://blog.gopher.vip/24_The_Go_Memory_Model/index.html">
+  <meta name="description" content="整理学习内容">
+<meta property="og:type" content="website">
+<meta property="og:title" content="我勒个擦">
+<meta property="og:url" content="https://blog.gopher.vip/archives/2022/01/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="牛年牛逼轰轰~~对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档The Go Memory Model。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。">
+<meta property="og:description" content="整理学习内容">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-02-12T15:50:25.000Z">
-<meta property="article:modified_time" content="2021-06-06T12:41:39.703Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
@@ -141,251 +139,50 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-24_The_Go_Memory_Model" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Golang内存模型
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2022" class="archive-year">2022</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/33_Tutorial_Getting_Started_With_Generics/" class="archive-article-date">
+  	<time datetime="2022-01-31T12:30:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-01-31</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/33_Tutorial_Getting_Started_With_Generics/">教程：开始使泛型</a>
     </h1>
   
 
-        
-        <a href="/24_The_Go_Memory_Model/" class="archive-article-date">
-  	<time datetime="2021-02-12T15:50:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-02-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>牛年牛逼轰轰~~<br>对于Gopher来说，Golang内存模型的地位极其重要也极容易被忽略。本片翻译自Golang官方文档<a target="_blank" rel="noopener" href="https://golang.org/ref/mem">The Go Memory Model</a>。Golang的版本频繁迭代，但是这篇官方文档自2014年5月31日至今都未曾变过，可见其设计。</p>
-</blockquote>
-<span id="more"></span>
+        <div class="article-info info-on-right">
+          
+          
 
-<!-- toc -->
-
-<ul>
-<li><a href="#%E4%BB%8B%E7%BB%8D">介绍</a></li>
-<li><a href="#%E5%BB%BA%E8%AE%AE">建议</a></li>
-<li><a href="#happens-before">Happens Before</a></li>
-<li><a href="#%E5%90%8C%E6%AD%A5">同步</a><ul>
-<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96">初始化</a></li>
-<li><a href="#goroutine%E5%88%9B%E5%BB%BA">Goroutine创建</a></li>
-<li><a href="#goroutine%E9%94%80%E6%AF%81">Goroutine销毁</a></li>
-<li><a href="#channel%E9%80%9A%E4%BF%A1">Channel通信</a></li>
-</ul>
-</li>
-<li><a href="#%E9%94%81">锁</a></li>
-<li><a href="#once">Once</a></li>
-<li><a href="#%E4%B8%8D%E6%AD%A3%E7%A1%AE%E7%9A%84%E5%90%8C%E6%AD%A5">不正确的同步</a></li>
-</ul>
-<!-- tocstop -->
-
-<h2><span id="介绍">介绍</span></h2><p>Go内存模型指定了一种条件，在这种条件下，可以保证在一个goroutine中读取变量可以观察到在不同goroutine中写入同一变量所产生的值。</p>
-<h2><span id="建议">建议</span></h2><p>当修改由多个goroutine同时访问的数据的时候，必须将这种访问程序序列化。为了序列化访问，需要使用通道操作或其他同步原语（例如<a target="_blank" rel="noopener" href="https://golang.org/pkg/sync/">sync</a>和<a target="_blank" rel="noopener" href="https://golang.org/pkg/sync/atomic/">sync/atomic</a>包中的原语）保护数据。如果您必须阅读本文档的其余部分以了解程序的行为，那么您就太聪明了。不要自作聪明。</p>
-<h2><span id="happens-before">Happens Before</span></h2><p>在单个goroutine中，读取和写入的行为必须像它们按照程序指定的顺序执行一样。也就是说，仅当重新排序不会改变语言规范所定义的该goroutine中的行为时，编译器和处理器才可以对单个goroutine中执行的读取和写入进行重新排序。由于指令重排，一个goroutine观察到的执行顺序可能不同于另一个goroutine所察觉到的执行顺序。例如，如果执行一个goroutine a = 1; b = 2;，则另一个goroutine可能会在的更新值b之前观察到的更新值a。</p>
-<p>为了指定读写要求，我们在Go程序中定义Happens Before，该顺序是执行内存操作的部分顺序。如果事件e1发生在事件e2之前，那么我们说e2发生在e1之后。另外，如果e1不发生再e2之前也发生在e2之后，那么我们说，e1和e2同时发生。</p>
-<p>在单个goroutine中，事前发生顺序是程序表示的顺序。</p>
-<p>如果满足以下两个条件成立的时候，对一个变量v的读r可以观察到对变量v的写w：<br>1、r在w之前不会发生<br>2、在w之后r之前不会有其他的写操作w’改变v</p>
-<p>为了保证一个变量v的读r观察到一个特定的对v的写w，需要确保w是唯一允许r观察的写。也就是说，如果下面两个条件都成立，r的读取保证会符合w的写入:<br>1、w发生在r之前<br>2、对共享变量v的任何其他写入要么发生在w之前，要么发生在r之后</p>
-<p>这一对条件比第一对强，它要求与w或r同时不发生其他写操作。</p>
-<p>因为单个goroutine没有并发性，所以这两个定义是等效的：一个读r观察到最近写入w到的值v。当多个goroutine访问一个共享变量时v，以确保读取观察到所需的写入，它们必须使用同步事件来建立事件发生。</p>
-<p>对变量v的类型初始化为0值，就像在内存模型中写一样。</p>
-<p>对大于单个机器字的值的读和写表现为以未指定顺序进行的多个机器字大小的操作。</p>
-<h2><span id="同步">同步</span></h2><h3><span id="初始化">初始化</span></h3><p>程序初始化在单个goroutine中运行，但是该goroutine可以创建其他并发运行的goroutine。</p>
-<p>如果一个包p导入了包q，那么q的init函数的完成将发生在任何p的开始之前。</p>
-<p>函数main的开始。Main发生在所有init函数完成之后。</p>
-<h3><span id="goroutine创建">Goroutine创建</span></h3><p>开始一个新的goroutine的go语句发生在goroutine的执行开始之前。</p>
-<p>例如，在这个程序中:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var a string</span><br><span class="line"></span><br><span class="line">func f() &#123;</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func hello() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	go f()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>调用hello将在未来的某个时刻(可能在hello返回之后)打印“hello, world”。</p>
-<h3><span id="goroutine销毁">Goroutine销毁</span></h3><p>不能保证goroutine的退出发生在程序中的任何事件之前。例如，在这个程序中:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var a string</span><br><span class="line"></span><br><span class="line">func hello() &#123;</span><br><span class="line">	go func() &#123; a = &quot;hello&quot; &#125;()</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对a的赋值没有跟随任何同步事件，所以不能保证它被任何其他goroutine观察到。事实上，编译器可能会删除整个go语句。</p>
-<p>如果一个goroutine的效果必须被另一个goroutine观察到，那么使用一个同步机制，例如锁或通道通信来建立一个相对的排序。</p>
-<h3><span id="channel通信">Channel通信</span></h3><p>Channel通信是实现goroutine间同步的主要方法。一个特定Channel上的每一个发送都与来自该通道的相应接收相匹配，通常是不在同一个goroutine中。</p>
-<p>Channel上的发送发生在该通道对应的接收完成之前。</p>
-<p>这个程序:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var c = make(chan int, 10)</span><br><span class="line">var a string</span><br><span class="line"></span><br><span class="line">func f() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	c &lt;- 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go f()</span><br><span class="line">	&lt;-c</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里可以保证打印”hello, world”。 对a的写入发生在c的发送之前，发送发生在c相应的接收完成之前，接收发生在打印之前。</p>
-<p>Channel关闭发生在由于通道关闭而返回零值的接收之前，因为通道已关闭。</p>
-<p>在前面的例子中，用close(c)替换c &lt;- 0会得到一个具有相同保证行为的程序。</p>
-<p>来自非缓冲Channel的接收发生在该通道上的发送完成之前。</p>
-<p>下面的程序(如上所述，但是交换了send和receive语句并使用了一个非缓冲Channel):</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var c = make(chan int)</span><br><span class="line">var a string</span><br><span class="line"></span><br><span class="line">func f() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	&lt;-c</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go f()</span><br><span class="line">	c &lt;- 0</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>这样也能保证打印”hello, world”。对a的写入发生在c的接收之前，接收发生在c完成相应的发送之前，发送发生在打印之前。</p>
-<p>如果通道是缓冲的(例如，c = make(chan int, 1))，那么程序将不能保证输出”hello, world”。(它可能打印空字符串，崩溃，或做其他事情。)</p>
-<p>容量为C的Channel上的第k次接收发生在该信道完成第k+C次发送之前。</p>
-<p>该规则将前一个规则推广到缓冲的Channel。它允许通过缓冲的Channel对计数信号量进行建模：Channel中的项目数与活动使用次数相对应，Channel的容量与同时使用的最大次数相对应，发送项目获取信号量，然后接收项目会释放信号量。这是限制并发性的常见习惯用法。</p>
-<p>这个程序为工作列表中的每个条目启动一个goroutine，但是goroutines使用limit(Channel)进行协调，以确保一次最多有三个工作函数在运行。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">var limit = make(chan int, 3)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	for _, w := range work &#123;</span><br><span class="line">		go func(w func()) &#123;</span><br><span class="line">			limit &lt;- 1</span><br><span class="line">			w()</span><br><span class="line">			&lt;-limit</span><br><span class="line">		&#125;(w)</span><br><span class="line">	&#125;</span><br><span class="line">	select&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2><span id="锁">锁</span></h2><p>该sync软件包实现了两种锁定数据类型sync.Mutex和sync.RWMutex。</p>
-<p>对于任何sync.Mutex或sync.RWMutex，变量l和n &lt; m，调用l. unlock()的n发生在调用l.lock()的m之前。</p>
-<p>程序:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var l sync.Mutex</span><br><span class="line">var a string</span><br><span class="line"></span><br><span class="line">func f() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	l.Unlock()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	l.Lock()</span><br><span class="line">	go f()</span><br><span class="line">	l.Lock()</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>保证打印”hello, world”。第一次调用l.Unlock()(在f中)发生在第二次调用l.Lock()(在main中)返回之前，后者发生在打印之前。</p>
-<p>对于l.RLock对sync.RWMutex变量的任何调用l，都存在一个n，使得l.RLock在调用n到之后发生（返回），l.Unlock并且匹配l.RUnlock发生在调用n +1到之前l.Lock。</p>
-<h2><span id="once">Once</span></h2><p>该sync包通过使用Once类型为在存在多个goroutine的情况下初始化提供了一种安全的机制。once.Do(f)一个特定的线程可以执行多个线程f，但是只有一个线程可以运行f()，其他线程将阻塞直到f()返回。</p>
-<p>在once.Do(f)中对f()的单个调用发生(返回)在任何调用once.Do(f)返回之前。</p>
-<p>程序：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">var a string</span><br><span class="line">var once sync.Once</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func doprint() &#123;</span><br><span class="line">	once.Do(setup)</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func twoprint() &#123;</span><br><span class="line">	go doprint()</span><br><span class="line">	go doprint()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>调用twoprint()将恰好调用一次setup()。setup()函数将在任何一次print()调用之前完成。结果是“hello, world”将打印两次。</p>
-<h2><span id="不正确的同步">不正确的同步</span></h2><p>请注意，一个读r可能会观察到与r并发的写w所写的值。即使发生了这种情况，也并不意味着在r之后发生的读会观察到在w之前发生的写。<br>程序：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">var a, b int</span><br><span class="line"></span><br><span class="line">func f() &#123;</span><br><span class="line">	a = 1</span><br><span class="line">	b = 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func g() &#123;</span><br><span class="line">	print(b)</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go f()</span><br><span class="line">	g()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>g()可能会打印2，然后再打印0。<br>这个事实使一些惯用语无效。</p>
-<p>Double-checked locking是为了避免同步的开销。例如，双打印程序可能被错误地写成:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var a string</span><br><span class="line">var done bool</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	done = true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func doprint() &#123;</span><br><span class="line">	if !done &#123;</span><br><span class="line">		once.Do(setup)</span><br><span class="line">	&#125;</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func twoprint() &#123;</span><br><span class="line">	go doprint()</span><br><span class="line">	go doprint()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>但不能保证，在doprint()中，观察写入到完成意味着观察写入到a。这个版本可以(错误地)打印一个空字符串，而不是”hello, world”。</p>
-<p>另一个不正确的习惯用法是忙于等待一个值，例如:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var a string</span><br><span class="line">var done bool</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">	a = &quot;hello, world&quot;</span><br><span class="line">	done = true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go setup()</span><br><span class="line">	for !done &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	print(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>和以前一样，基本上不能保证在main中观察到done就意味着观察到对a的写，因此该程序也可能打印一个空字符串。更糟的是，不保证在写done永远不会被观察到main，因为两个goroutine之间没有同步活动。main不能保证循环完成。</p>
-<p>这个主题还有一些更微妙的变体，比如这个程序：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">type T struct &#123;</span><br><span class="line">	msg string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var g *T</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">	t := new(T)</span><br><span class="line">	t.msg = &quot;hello, world&quot;</span><br><span class="line">	g = t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go setup()</span><br><span class="line">	for g == nil &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	print(g.msg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>即使main观察了g != nil并退出了它的循环，也不能保证它会观察g.msg的初始化值。</p>
-<p>在所有这些示例中，解决方案都是相同的：使用显式同步。</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
         </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
-        </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://blog.gopher.vip/24_The_Go_Memory_Model/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/25_GIN_INTRODUCE_1/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Gin框架学习（一）-- 介绍
-        
-      </div>
-    </a>
   
   
-    <a href="/23_GOLANG_Memory_Allocation/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Golang内存分配</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
+    
 
-  
-
-  
 
 
           </div>
@@ -408,8 +205,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
