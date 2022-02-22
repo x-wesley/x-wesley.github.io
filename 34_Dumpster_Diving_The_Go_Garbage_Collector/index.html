@@ -6,18 +6,33 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.gopher.vip">
-  <title>我勒个擦</title>
+  <title>深入Go垃圾收集器 | 我勒个擦</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="整理学习内容">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我勒个擦">
-<meta property="og:url" content="https://blog.gopher.vip/index.html">
+  <meta name="description" content="本文翻译自《Dumpster diving the Go garbage collector》">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入Go垃圾收集器">
+<meta property="og:url" content="https://blog.gopher.vip/34_Dumpster_Diving_The_Go_Garbage_Collector/index.html">
 <meta property="og:site_name" content="我勒个擦">
-<meta property="og:description" content="整理学习内容">
+<meta property="og:description" content="本文翻译自《Dumpster diving the Go garbage collector》">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_1.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_2.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_3.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_4.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_5.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_6.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_7.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_8.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_9.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_10.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_11.png">
+<meta property="og:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_12.png">
+<meta property="article:published_time" content="2022-02-21T18:22:02.000Z">
+<meta property="article:modified_time" content="2022-02-22T14:27:53.130Z">
 <meta property="article:author" content="我ca我ca我cacaca">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.gopher.vip/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_1.png">
   
     <link rel="alternative" href="/atom.xml" title="我勒个擦" type="application/atom+xml">
   
@@ -139,16 +154,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-34_Dumpster_Diving_The_Go_Garbage_Collector" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-34_Dumpster_Diving_The_Go_Garbage_Collector" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/34_Dumpster_Diving_The_Go_Garbage_Collector/">深入Go垃圾收集器</a>
+    <h1 class="article-title" itemprop="name">
+      深入Go垃圾收集器
     </h1>
   
 
@@ -164,9 +177,252 @@
         <blockquote>
 <p>本文翻译自<a target="_blank" rel="noopener" href="https://blog.px.dev/go-garbage-collector/">《Dumpster diving the Go garbage collector》</a></p>
 </blockquote>
-        
+<span id="more"></span>
+
+
+<p>Go是一种垃圾回收语言。这使得编写Go更简单，因为你可以花更少的时间来担心管理分配对象的寿命。</p>
+<p>Go中的内存管理绝对比C++中的要简单。但这也不是一个我们作为Go开发者可以完全忽视的领域。了解Go是如何分配和释放内存的，可以让我们编写更好、更高效的应用程序。垃圾收集器是这个难题的关键部分。</p>
+<p>为了更好地了解垃圾收集器是如何工作的，我决定在一个活的应用程序上追踪它的底层行为。在这次调查中，我将用eBPF上行测试Go的垃圾收集器。这篇文章的源代码在<a target="_blank" rel="noopener" href="https://github.com/pixie-io/pixie-demos/tree/main/go-garbage-collector">这里</a>。</p>
+<!-- toc -->
+
+<ul>
+<li><a href="#%E6%BD%9C%E5%9C%A8%E6%B7%B1%E5%85%A5%E7%A0%94%E7%A9%B6%E4%B9%8B%E5%89%8D%E7%9A%84%E5%87%A0%E4%BB%B6%E4%BA%8B">潜在深入研究之前的几件事</a><ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFuprobes">为什么是uprobes？</a></li>
+<li><a href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%9A%84%E9%98%B6%E6%AE%B5">垃圾收集的阶段</a></li>
+<li><a href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%BC%94%E7%A4%BA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F">一个简单的演示应用程序</a></li>
+</ul>
+</li>
+<li><a href="#%E8%BF%BD%E8%B8%AA%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%9A%84%E4%B8%BB%E8%A6%81%E9%98%B6%E6%AE%B5">追踪垃圾收集的主要阶段</a><ul>
+<li><a href="#%E8%BF%BD%E8%B8%AA-runtimegc">追踪 runtime.GC()</a></li>
+<li><a href="#%E8%BF%BD%E8%B8%AA%E6%A0%87%E8%AE%B0%E5%92%8C%E6%B8%85%E9%99%A4%E9%98%B6%E6%AE%B5">追踪标记和清除阶段</a></li>
+<li><a href="#%E8%BF%BD%E8%B8%AA-stop-the-world-%E4%BA%8B%E4%BB%B6">追踪 “Stop The World “事件</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%98%AF%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E8%87%AA%E6%88%91%E8%B0%83%E6%95%B4%E7%9A%84">垃圾收集器是如何进行自我调整的？</a><ul>
+<li><a href="#%E8%A7%A6%E5%8F%91%E7%8E%87">触发率</a></li>
+<li><a href="#%E6%A0%87%E8%AE%B0%E5%92%8C%E8%BE%85%E5%8A%A9%E6%B8%85%E6%89%AB">标记和辅助清扫</a></li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+<!-- tocstop -->
+
+<h2><span id="潜在深入研究之前的几件事">潜在深入研究之前的几件事</span></h2><p>在深入研究之前，让我们快速了解一下上行线、垃圾收集器的设计以及我们将要使用的演示程序的一些情况。</p>
+<h3><span id="为什么是uprobes">为什么是uprobes？</span></h3><p><a target="_blank" rel="noopener" href="https://jvns.ca/blog/2017/07/05/linux-tracing-systems/#uprobes">uprobes</a>很酷，因为它可以让我们在不修改代码的情况下动态地收集新信息。当你不能或不想重新部署你的应用时，这很有用–也许是因为它在生产中，或者有趣的行为难以重现。</p>
+<p>函数参数、返回值、延迟和时间戳都可以通过uprobes来收集。在这篇文章中，我将在Go垃圾收集器的关键函数上部署uprobes。这将使我能够看到它在我运行的应用程序中的实际表现。</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_1.png" alt="34_1"><br>uprobes可以追踪延迟、时间戳、参数和函数的返回值</p>
+<p>注意：本帖使用Go 1.16。我将追踪Go运行时中的私有函数。然而，这些函数在以后的Go版本中可能会有变化。</p>
+<h3><span id="垃圾收集的阶段">垃圾收集的阶段</span></h3><p>Go使用了一个并发标记和扫除垃圾收集器。对于那些不熟悉这些术语的人来说，这里有一个快速的总结，以便你能理解文章的其余部分。你可以在<a target="_blank" rel="noopener" href="https://agrim123.github.io/posts/go-garbage-collector.html">这里</a>、<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Tracing_garbage_collection">这里</a>、<a target="_blank" rel="noopener" href="https://go.dev/blog/ismmkeynote">这里</a>和<a target="_blank" rel="noopener" href="https://www.iecc.com/gclist/GC-algorithms.html">这里</a>找到更详细的信息。</p>
+<p>Go的垃圾收集器被称为并发式，因为它可以安全地与主程序并行运行。换句话说，它不需要*停止你的程序的执行来完成它的工作。(*后文将详细介绍)。</p>
+<p>垃圾收集有两个主要阶段。</p>
+<p><strong>标记阶段:</strong> 识别并标记程序不再需要的对象。</p>
+<p><strong>清除阶段:</strong> 对于每一个被标记阶段标记为 “不可及 “的对象，释放内存以用于其他地方。</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_2.png" alt="34_2"><br>一种节点着色算法。黑色物体仍在使用中。白色物体已经准备好被清理了。灰色物体仍然需要被归类为黑色或白色。</p>
+<h3><span id="一个简单的演示应用程序">一个简单的演示应用程序</span></h3><p>这里有一个简单的端点，我将用它来触发垃圾收集器。它创建了一个大小不一的字符串数组。然后它通过runtime.GC()调用垃圾收集器。</p>
+<p>通常情况下，你不需要手动调用垃圾收集器，因为Go会为你处理。然而，这保证了它在每次调用API后都会启动。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http.HandleFunc(&quot;/allocate-memory-and-run-gc&quot;, func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">   arrayLength, bytesPerElement := parseArrayArgs(r)</span><br><span class="line">   arr := generateRandomStringArray(arrayLength, bytesPerElement)</span><br><span class="line">   fmt.Fprintf(w, fmt.Sprintf(&quot;Generated string array with %d bytes of data\n&quot;, len(arr) * len(arr[0])))</span><br><span class="line">   runtime.GC()</span><br><span class="line">   fmt.Fprintf(w, &quot;Ran garbage collector\n&quot;)</span><br><span class="line"> &#125;)</span><br></pre></td></tr></table></figure>
+
+<h2><span id="追踪垃圾收集的主要阶段">追踪垃圾收集的主要阶段</span></h2><p>现在我们有了一些关于uprobes和Go的垃圾收集器的基础知识，让我们深入观察其行为。</p>
+<h3><span id="追踪-runtimegc">追踪 runtime.GC()</span></h3><p>首先，我决定在Go的runtime库中为以下函数添加上uprobes。</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/go1.16/src/runtime/mgc.go#L1126">GC</a></td>
+<td>Invokes the GC</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/go1.16/src/runtime/mgc.go#L1201">gcWaitOnMark</a></td>
+<td>Waits for the mark phase to complete</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/go1.16/src/runtime/mgc.go#L2170">gcSweep</a></td>
+<td>Performs the sweep phase</td>
+</tr>
+</tbody></table>
+<p>(如果你有兴趣看看上行线是如何产生的，<a target="_blank" rel="noopener" href="https://github.com/pixie-io/pixie-demos/tree/main/go-garbage-collector">这里</a>有代码）。</p>
+<p>在部署了uprobes后，我点击了端点，生成了一个包含10个字符串的数组，每个字符串都是20字节。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl &#x27;127.0.0.1/allocate-memory-and-run-gc?arrayLength=10&amp;bytesPerElement=20&#x27;</span><br><span class="line">Generated string array with 200 bytes of data</span><br><span class="line">Ran garbage collector</span><br></pre></td></tr></table></figure>
+<p>部署的uprobes在curl调用后观察到以下事件:<br><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_3.png" alt="34_3"><br>运行垃圾收集器后，为GC、gcWaitOnMark和gcSweep收集了事件</p>
+<p>从<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/go1.16/src/runtime/mgc.go#L1126">源代码</a>中可以看出这一点–gcWaitOnMark被调用了两次，一次是在开始下一个周期之前对前一个周期的验证。标记阶段会触发扫频阶段。</p>
+<p>接下来，我测量了一些runtime.GC的延迟，这些延迟是在使用各种输入的/allocate-memory-and-run-gc端点后进行的。</p>
+<table>
+<thead>
+<tr>
+<th>arrayLength</th>
+<th>bytesPerElement</th>
+<th>Approximate size (B)</th>
+<th>GC latency (ms)</th>
+<th>GC throughput (MB/s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td>1,000</td>
+<td>100,000</td>
+<td>3.2</td>
+<td></td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>1,000</td>
+<td>1,000,000</td>
+<td>8.5</td>
+<td>118</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>1,000</td>
+<td>10,000,000</td>
+<td>53.7</td>
+<td>186</td>
+</tr>
+<tr>
+<td>100</td>
+<td>10,000</td>
+<td>1,000,000</td>
+<td>3.2</td>
+<td>313</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>10,000</td>
+<td>10,000,000</td>
+<td>12.4</td>
+<td>807</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>10,000</td>
+<td>100,000,000</td>
+<td>96.2</td>
+<td>1,039</td>
+</tr>
+</tbody></table>
+<h3><span id="追踪标记和清除阶段">追踪标记和清除阶段</span></h3><p>虽然这是一个很好的高层视图，但我们可以使用更多的细节。接下来，我探测了一些用于内存分配、标记和清扫的辅助函数，以获得下一层次的信息。</p>
+<p>这些辅助函数有参数或返回值，可以帮助我们更好地可视化正在发生的事情（例如，分配的内存页面）。</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+<th>Info captured</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>allocSpan</td>
+<td>Allocates new memory</td>
+<td>Pages of memory allocated</td>
+</tr>
+<tr>
+<td>gcDrainN</td>
+<td>Performs N units of marking work</td>
+<td>Units of marking work performed</td>
+</tr>
+<tr>
+<td>sweepone</td>
+<td>Sweeps memory from a span</td>
+<td>Pages of memory swept</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl &#x27;127.0.0.1/allocate-memory-and-run-gc?arrayLength=20000&amp;bytesPerElement=4096&#x27;</span><br><span class="line">Generated string array with 81920000 bytes of data</span><br><span class="line">Ran garbage collector</span><br></pre></td></tr></table></figure>
+
+<p>在给垃圾收集器增加一些负载后，以下是原始结果。<br><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_4.png" alt="34_4"><br>在调用垃圾收集器后，为allocSpan、gcDrainN和sweepone收集的事件样本</p>
+<p>当绘制成时间序列时，它们更容易解释:<br><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_5.png" alt="34_5"><br>Pages allocated by allocSpan over time</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_6.png" alt="34_6"><br>Mark work performed by gcDrain over time</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_7.png" alt="34_7"><br>Pages swept by sweepone over time</p>
+<p>现在我们可以看到发生了什么:</p>
+<ul>
+<li>Go分配了几千个page，这很合理，因为我们直接向堆中添加了~80MB的字符串。</li>
+<li>标记工作开始了（注意，它的单位不是页，而是标记工作单位）</li>
+<li>标记的页面被清扫器清扫。(这应该是所有的页面，因为我们在调用完成后并没有重复使用字符串数组）。</li>
+</ul>
+<h3><span id="追踪-stop-the-world-事件">追踪 “Stop The World “事件</span></h3><p>“Stop The World “是指垃圾收集器为了安全地修改状态，暂时停止了除其自身之外的一切。我们通常喜欢尽量减少STW阶段，因为它们会拖慢我们的程序（通常是在最不方便的时候……）。</p>
+<p>有些垃圾收集器在垃圾收集运行的整个过程中停止世界。这些是 “非并发的 “垃圾收集器。虽然Go的垃圾收集器在很大程度上是并发的，但我们可以从代码中看到，它在技术上确实在两个地方停止了世界。</p>
+<p>让我们来追踪以下函数:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>stopTheWorldWithSema</td>
+<td>停止其他程序，直到startTheWorldWithSema被调用</td>
+</tr>
+<tr>
+<td>startTheWorldWithSema</td>
+<td>将被停止的程序重新启动</td>
+</tr>
+</tbody></table>
+<p>并再次触发垃圾收集:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl &#x27;127.0.0.1/allocate-memory-and-run-gc?arrayLength=10&amp;bytesPerElement=20&#x27;</span><br><span class="line">Generated string array with 200 bytes of data</span><br><span class="line">Ran garbage collector</span><br></pre></td></tr></table></figure>
+
+<p>新探针产生了以下事件:<br><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_8.png" alt="34_8"><br>Generated start and stop the world events</p>
+<p>我们可以从GC事件中看到，垃圾收集需要3.1毫秒才能完成。在我检查了确切的时间戳后，发现世界第一次被停止了300微秒，第二次被停止了365微秒。换句话说，~80%的垃圾收集是同时进行的。我们希望当垃圾收集器在真正的内存压力下被 “自然 “调用时，这个比例会变得更好。</p>
+<p>为什么Go的垃圾收集器需要停止世界？</p>
+<p><strong>第1次STW</strong>（在标记阶段之前）:设置状态并打开写屏障。写入屏障确保在GC运行时正确地跟踪新的写入（这样它们就不会被意外地释放或保留在周围）。</p>
+<p><strong>第2次STW</strong>（标记阶段之后）: 清理标记状态，关闭写屏障。</p>
+<h2><span id="垃圾收集器是如何进行自我调整的">垃圾收集器是如何进行自我调整的？</span></h2><p>对于像Go这样的并发式垃圾收集器，知道何时运行垃圾收集是一个重要的考虑因素。</p>
+<p>早期的垃圾收集器被设计为一旦达到一定的内存消耗水平就会启动。如果垃圾收集器是非并发的，这就很好用。<strong>但是对于一个并发的垃圾收集器，主程序在垃圾收集期间仍然在运行–因此仍然在分配内存。</strong></p>
+<p>这意味着如果我们太晚运行垃圾收集器的话，我们可能会超额完成内存目标。(Go也不能一直运行垃圾收集–GC会占用主程序的资源和性能)。</p>
+<p>Go的垃圾收集器使用一个<a target="_blank" rel="noopener" href="https://go.googlesource.com/proposal/+/a216b56e743c5b6b300b3ef1673ee62684b5b63b/design/44167-gc-pacer-redesign.md">pacer</a>来估计垃圾收集的最佳时间。这有助于Go实现其内存和CPU目标，而不至于牺牲更多的应用程序性能。</p>
+<h3><span id="触发率">触发率</span></h3><p>正如我们刚刚建立的，Go的并发式垃圾收集器依靠一个pacer来决定何时进行垃圾收集。但它是如何做出这个决定的呢？</p>
+<p>每次垃圾收集器被调用时，pacer都会更新其内部目标，以确定下一次应该何时运行GC。这个目标被称为触发率。触发率为0.6意味着，一旦堆的大小增加了60%，系统就应该再次运行垃圾收集。触发率考虑了CPU、内存和其他因素来产生这个数字。</p>
+<p>让我们看看当我们一次分配大量内存时，垃圾收集器的触发率是如何变化的。我们可以通过追踪函数gcSetTriggerRatio来获取触发率。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl &#x27;127.0.0.1/allocate-memory-and-run-gc?arrayLength=20000&amp;bytesPerElement=4096&#x27;</span><br><span class="line">Generated string array with 81920000 bytes of data</span><br><span class="line">Ran garbage collector</span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_9.png" alt="34_9"><br>Trigger ratio over time</p>
+<p>我们可以看到，最初，触发率是相当高的。运行时已经确定，在程序使用450%以上的内存之前，没有必要进行垃圾收集。这是有道理的，因为程序并没有做很多事情（也没有使用很多堆）。</p>
+<p>然而，一旦我们打到终点创建<del>81MB的堆分配，触发率迅速下降到</del>1。现在我们只需要再多100%的内存就应该发生垃圾收集（因为我们的内存消耗上升）。</p>
+<h3><span id="标记和辅助清扫">标记和辅助清扫</span></h3><p>当我分配了内存，但不调用垃圾收集器时会发生什么？下一步我将点击/allocate-memory端点，它与/allocate-memory-and-gc做同样的事情，但跳过对runtime.GC()的调用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl &#x27;127.0.0.1/allocate-memory?arrayLength=10000&amp;bytesPerElement=10000&#x27;</span><br><span class="line">Generated string array with 100000000 bytes of data</span><br></pre></td></tr></table></figure>
+
+<p>根据最近的触发率，垃圾收集器应该还没有开始工作。<strong>然而，我们看到标记和清扫仍然发生</strong>。</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_10.png" alt="34_10"><br>Mark work performed by gcDrain over time<br><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_11.png" alt="34_11"><br>Pages swept by sweepone over time</p>
+<p>事实证明，垃圾收集器还有一招来防止内存的失控增长。**如果堆内存开始增长过快，垃圾收集器将向分配新内存的任何人收取 “tax”**。请求新的堆分配的Goroutine将首先要协助垃圾收集器，然后才能得到他们所要求的东西。</p>
+<p>这个 “协助 “系统增加了分配的延迟，因此有助于给系统施加反压力。这真的很重要，因为它解决了并发垃圾收集器可能产生的一个问题。在一个并发的垃圾收集器中，当垃圾收集运行时，内存分配仍在分配。如果程序分配内存的速度比垃圾收集器释放内存的速度快，那么内存的增长将是无限制的。<strong>辅助工具通过减慢（反压）新内存的净分配来解决这个问题</strong>。</p>
+<p>我们可以跟踪<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/go1.16/src/runtime/mgcmark.go#L504">gcAssistAlloc1</a>来看看这个过程的运作。 gcAssistAlloc1接收了一个叫做scanWork的参数，这是要求的辅助工作的数量。</p>
+<p><img src="/image/34_Dumpster_Diving_The_Go_Garbage_Collector/34_12.png" alt="34_12"><br>Assist work performed by gcAllocAssist1 over time</p>
+<p>我们可以看到，gcAssistAlloc1是标记和扫除工作的来源。它收到一个请求，要完成大约300,000个单位的工作。在前面的标记阶段图中，我们可以看到gcDrainN在同一时间执行了大约30万单位的标记工作（只是分散了一些）。</p>
+<h2><span id="总结">总结</span></h2><p>关于Go中的内存分配和垃圾回收，还有很多需要学习的地方。这里有一些其他的资源可以查看:</p>
+<ul>
+<li>Go对小对象的<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/mgc.go#L93">特殊扫除</a></li>
+<li>如何对你的代码进行<a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-introduction-to-the-escape-analysis-f7610174e890">逃逸分析</a>，以了解对象将被分配到堆栈或堆中的情况</li>
+<li><a target="_blank" rel="noopener" href="https://pkg.go.dev/sync#Pool">sync.Pool</a>，一个并发的数据结构，通过池化共享对象来<a target="_blank" rel="noopener" href="https://medium.com/swlh/go-the-idea-behind-sync-pool-32da5089df72">减少分配</a>。</li>
+</ul>
+<p>创建上行线，就像我们在这个例子中做的那样，通常最好在更高层次的BPF框架中完成。在这篇文章中，我使用了Pixie的<a target="_blank" rel="noopener" href="https://docs.px.dev/tutorials/custom-data/dynamic-go-logging/"> Dynamic Go logging </a>功能（目前仍在alpha阶段）。<a target="_blank" rel="noopener" href="https://github.com/iovisor/bpftrace">bpftrace</a>是另一个创建上行线的好工具。你可以在<a target="_blank" rel="noopener" href="https://github.com/pixie-io/pixie-demos/tree/main/go-garbage-collector">这里</a>尝试这个帖子中的整个例子。</p>
+<p>另一个检查Go垃圾收集器行为的好办法是gc tracer。只要在启动程序时传入GODEBUG=gctrace=1即可。它需要重新启动，但会告诉你关于垃圾收集器正在做什么的各种很酷的信息。</p>
+<p>有问题吗？请在<a target="_blank" rel="noopener" href="https://slackin.px.dev/">Slack</a>或Twitter上找到Pixie贡献者：<a target="_blank" rel="noopener" href="https://twitter.com/pixie_run">@pixie_run</a>。</p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -175,16 +431,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/34_Dumpster_Diving_The_Go_Garbage_Collector/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://blog.gopher.vip/34_Dumpster_Diving_The_Go_Garbage_Collector/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/33_Tutorial_Getting_Started_With_Generics/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">教程：开始使泛型</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -204,599 +519,15 @@
 
 
 
-
-  
-    <article id="post-33_Tutorial_Getting_Started_With_Generics" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/33_Tutorial_Getting_Started_With_Generics/">教程：开始使泛型</a>
-    </h1>
-  
-
-        
-        <a href="/33_Tutorial_Getting_Started_With_Generics/" class="archive-article-date">
-  	<time datetime="2022-01-31T12:30:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-01-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>本文翻译自<a target="_blank" rel="noopener" href="https://go.dev/doc/tutorial/generics">《Tutorial: Getting started with generics》</a></p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/33_Tutorial_Getting_Started_With_Generics/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-32_The_road_to_go" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/32_The_road_to_go/">Go语言之路</a>
-    </h1>
-  
-
-        
-        <a href="/32_The_road_to_go/" class="archive-article-date">
-  	<time datetime="2021-11-22T07:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>本文翻译自<a target="_blank" rel="noopener" href="https://engineering.godeltech.com/the-road-to-go/">《https://engineering.godeltech.com/the-road-to-go/》</a></p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/32_The_road_to_go/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/">深入了解goroutine的泄漏和避免泄漏的最佳做法</a>
-    </h1>
-  
-
-        
-        <a href="/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/" class="archive-article-date">
-  	<time datetime="2021-09-21T10:55:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>本文翻译自<a target="_blank" rel="noopener" href="https://mourya-g9.medium.com/deep-dive-on-goroutine-leaks-and-best-practices-to-avoid-them-a35021383f64">《Deep dive on goroutine leaks and best practices to avoid them》</a><br>知识点：节假日是由国务院制定的</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/31_Deep_dive_on_goroutine_leaks_and_best_practices_to_avoid_them/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-30_errgroup" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/30_errgroup/">学习errgroup</a>
-    </h1>
-  
-
-        
-        <a href="/30_errgroup/" class="archive-article-date">
-  	<time datetime="2021-08-22T12:51:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>听说今天是中元节~~~~~~，该节是追怀先人的一种文化传统节日，其文化核心是敬祖尽孝，并不是鬼节。<br>学习以下errgroup。</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/30_errgroup/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-29_Golang_Len" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/29_Golang_Len/">Go如何计算len()..?</a>
-    </h1>
-  
-
-        
-        <a href="/29_Golang_Len/" class="archive-article-date">
-  	<time datetime="2021-07-31T15:55:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>本文翻译自<a target="_blank" rel="noopener" href="https://tpaschalis.github.io/golang-len/">《How does Go calculate len()..?》</a></p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/29_Golang_Len/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-28_Gin_Trees_4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/28_Gin_Trees_4/">Gin框架学习（四）--Trees</a>
-    </h1>
-  
-
-        
-        <a href="/28_Gin_Trees_4/" class="archive-article-date">
-  	<time datetime="2021-06-14T16:18:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>结束了3天的端午游，阿那亚赞的一笔，就是人忒多了。回来把Gin的核心–Trees补上吧。<br>待完善~~~</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/28_Gin_Trees_4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-27_Gin_Context_3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/27_Gin_Context_3/">Gin框架学习（三）-- Context</a>
-    </h1>
-  
-
-        
-        <a href="/27_Gin_Context_3/" class="archive-article-date">
-  	<time datetime="2021-05-09T15:38:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>母亲节快乐~ 祝天下的母亲都快快乐乐<br>Context是框架中非常重要的一点，它允许我们在中间件间共享变量，管理整个流程。携带了HTTP请求的request、response。</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/27_Gin_Context_3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-26_Gin_Engine_2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/26_Gin_Engine_2/">Gin框架学习（二）-- Engine</a>
-    </h1>
-  
-
-        
-        <a href="/26_Gin_Engine_2/" class="archive-article-date">
-  	<time datetime="2021-04-04T14:47:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Engine是Gin的根入口，是整个框架的基础。包含了context、tree、RouterGroup相关核心组件。<br>我们通过 Engine 对象来定义服务路由信息、组装插件、运行服务。</p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/26_Gin_Engine_2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-25_GIN_INTRODUCE_1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/25_GIN_INTRODUCE_1/">Gin框架学习（一）-- 介绍</a>
-    </h1>
-  
-
-        
-        <a href="/25_GIN_INTRODUCE_1/" class="archive-article-date">
-  	<time datetime="2021-03-20T01:30:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>据传Gin框架是Golang语言领域最屌的web框架。<br>开启Gin的学习整理之路。 </p>
-</blockquote>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/25_GIN_INTRODUCE_1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next »</a>
-    </nav>
   
 
+  
+
+  
+
+  
 
 
           </div>
@@ -818,8 +549,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
